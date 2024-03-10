@@ -9,3 +9,7 @@ func Print(values ...string) {
 func Log(values ...string) {
 	log.Println(values)
 }
+
+func Log2(values ...string) {
+	log.Println(values)
+}
