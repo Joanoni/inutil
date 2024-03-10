@@ -11,7 +11,7 @@ import (
 var Router *pat.Router
 var Server *http.Server
 
-func StartServer(address string) {
+func Server_Start(address string) {
 	Router = pat.New()
 
 	Server = &http.Server{
@@ -28,7 +28,11 @@ func Oi() {
 	Print("oi2")
 }
 
-func RunServer() {
+func Server_Run() {
 	LogF("Running server: %v", Server.Addr)
 	log.Fatal(Server.ListenAndServe())
+}
+
+func Server_JSON(wr http.ResponseWriter) {
+	wr.Write([]byte("oi"))
 }
