@@ -3,6 +3,8 @@ package inutil
 var startModel *Start_Model
 
 func Start(start *Start_Model) Inutil {
+	Clear()
+	Log("Initializing")
 	out := Inutil{}
 
 	startModel = start
