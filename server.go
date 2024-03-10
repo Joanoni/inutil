@@ -63,7 +63,7 @@ func (c *Context) JSON(payload Return[any]) {
 
 func (c *Context) HandleError(err error) bool {
 	if err != nil {
-		LogF("HandleError: %v", err.Error())
+		ErrorF("HandleError: %v", err)
 		c.err = err
 		return true
 	}
