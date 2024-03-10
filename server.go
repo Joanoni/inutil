@@ -1,6 +1,7 @@
 package inutil
 
 import (
+	"log"
 	"net/http"
 	"time"
 
@@ -25,4 +26,8 @@ func StartServer(address string) {
 
 func Oi() {
 	Print("oi2")
+}
+
+func RunServer() {
+	log.Fatal(Server.ListenAndServe())
 }
