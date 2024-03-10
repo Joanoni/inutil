@@ -68,7 +68,7 @@ func Debug(values ...any) {
 
 func DebugF(format string, values ...any) {
 	if checkDebug() {
-		LogF(format+"\n", values...)
+		LogF(format, values...)
 	}
 }
 
@@ -89,7 +89,7 @@ func internalLog(values ...any) {
 
 func internalLogF(format string, values ...any) {
 	if checkInternalLog() {
-		LogF(format+"\n", values...)
+		LogF(format, values...)
 	}
 }
 
