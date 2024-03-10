@@ -37,6 +37,7 @@ switch ($versionType) {
 git add .
 git commit -m $message  --quiet
 git tag $versionNew
+git tag latest
 git push origin $versionNew  --quiet
 
 "Pushed to git"
