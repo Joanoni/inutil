@@ -8,7 +8,7 @@ import (
 )
 
 func logTime() string {
-	return time.Now().Format(LogFormat)
+	return time.Now().Format(startModel.Log.TimeFormat)
 }
 
 func Log(values ...any) {
@@ -20,7 +20,7 @@ func Log(values ...any) {
 }
 
 func LogF(format string, values ...any) {
-	fmt.Printf(logTime()+format+"\n", values...)
+	fmt.Printf(logTime()+" "+format+"\n", values...)
 }
 
 func Error(err error) {
@@ -29,7 +29,7 @@ func Error(err error) {
 
 func ErrorF(format string, err error, values ...any) {
 	values = append([]any{err.Error()}, values...)
-	color.Red(logTime()+format, values...)
+	color.Red(logTime()+" "+format, values...)
 }
 
 func Debug(values ...any) {
@@ -45,7 +45,7 @@ func DebugF(format string, values ...any) {
 }
 
 func checkDebug() bool {
-	for _, env := range startModel.debugEnvs {
+	for _, env := range startModel.Log.debugEnvs {
 		if env == startModel.Enviroment {
 			return true
 		}
@@ -66,7 +66,7 @@ func internalLogF(format string, values ...any) {
 }
 
 func checkInternalLog() bool {
-	for _, env := range startModel.internalLogEnvs {
+	for _, env := range startModel.Log.internalLogEnvs {
 		if env == startModel.Enviroment {
 			return true
 		}

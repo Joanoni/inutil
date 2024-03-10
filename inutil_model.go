@@ -1,15 +1,20 @@
 package inutil
 
 type Start_Model struct {
-	Server          *Start_Server
-	InternalLog     Start_Log
-	internalLogEnvs []string
-	DebugLog        Start_Log
-	debugEnvs       []string
-	Enviroment      string
+	Server     *Start_Server
+	Log        *Start_Log
+	Enviroment string
 }
 
 type Start_Log struct {
+	InternalLog     Start_Log_Envs
+	internalLogEnvs []string
+	DebugLog        Start_Log_Envs
+	debugEnvs       []string
+	TimeFormat      string
+}
+
+type Start_Log_Envs struct {
 	Development bool
 	Stage       bool
 	Production  bool
