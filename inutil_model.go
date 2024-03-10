@@ -22,6 +22,7 @@ type Start_Log_Envs struct {
 
 type Start_Server struct {
 	Address string
+	port    string
 }
 
 type Inutil struct {

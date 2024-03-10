@@ -39,7 +39,7 @@ func Start(start *Start_Model) Inutil {
 
 	if startModel.Server != nil {
 		internalLog("Starting server")
-		out.Server = server_Start(startModel.Server)
+		out.Server = startModel.Server.start()
 	}
 
 	return out

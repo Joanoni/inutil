@@ -8,16 +8,24 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/pat"
 )
 
 var server *Server_Model
 
-func server_Start(ss *Start_Server) *Server_Model {
+func (ss *Start_Server) start() *Server_Model {
 	server = &Server_Model{}
 
 	server.Router = pat.New()
+
+	if !strings.Contains(ss.Address, ":") {
+		Debug("No port in address, using default 80")
+		ss.Address = ss.Address + ":80"
+	}
+
+	ss.port = ":" + strings.Split(ss.Address, ":")[1]
 
 	server.HTTPServer = &http.Server{
 		Addr: ss.Address, //"0.0.0.0:8080",
@@ -37,6 +45,13 @@ func server_Start(ss *Start_Server) *Server_Model {
 	// server.Router.Use(middleware_cors_handler)
 
 	return server
+}
+
+func (s *Server_Model) Run() {
+	internalLogF("Running server: %v", s.HTTPServer.Addr)
+	originsOk := handlers.AllowedOrigins([]string{"*"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+	log.Fatal(http.ListenAndServe(startModel.Server.port, handlers.CORS(originsOk, methodsOk)(s.Router)))
 }
 
 func (s *Server_Model) Get(path string, h HandlerFunc) *mux.Route {
@@ -86,11 +101,6 @@ func (s *Server_Model) Options(path string, h HandlerFunc) *mux.Route {
 	return s.Router.Options(path, func(wr http.ResponseWriter, req *http.Request) {
 		h(s.Context(req))
 	})
-}
-
-func (s *Server_Model) Run() {
-	internalLogF("Running server: %v", s.HTTPServer.Addr)
-	log.Fatal(s.HTTPServer.ListenAndServe())
 }
 
 func (s *Server_Model) Context(req *http.Request) *Context {
