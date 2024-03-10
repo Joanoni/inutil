@@ -24,5 +24,5 @@ func StartServer(address string) {
 }
 
 func Oi() {
-	Print("oi")
+	Print("oi2")
 }
