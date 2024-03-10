@@ -12,13 +12,13 @@ import (
 
 var server *Server_Model
 
-func Server_Start(address string) *Server_Model {
+func server_Start(ss *Start_Server) *Server_Model {
 	server = &Server_Model{}
 
 	server.Router = pat.New()
 
 	server.HTTPServer = &http.Server{
-		Addr: address, //"0.0.0.0:8080",
+		Addr: ss.Address, //"0.0.0.0:8080",
 		// Good practice to set timeouts to avoid Slowloris attacks.
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,
@@ -36,10 +36,6 @@ func Server_Start(address string) *Server_Model {
 	return server
 }
 
-func Oi() {
-	Print("oi2")
-}
-
 func (s *Server_Model) Get(path string, h HandlerFunc) *mux.Route {
 	return s.Router.Get(path, func(wr http.ResponseWriter, req *http.Request) {
 		h(s.Context(req))
@@ -47,7 +43,7 @@ func (s *Server_Model) Get(path string, h HandlerFunc) *mux.Route {
 }
 
 func (s *Server_Model) Run() {
-	LogF("Running server: %v", s.HTTPServer.Addr)
+	internalLogF("Running server: %v", s.HTTPServer.Addr)
 	log.Fatal(s.HTTPServer.ListenAndServe())
 }
 
