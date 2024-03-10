@@ -37,6 +37,6 @@ switch ($versionType) {
 git add .
 git commit -m $message
 git tag $versionNew
-git commit origin $versionNew
+git push origin $versionNew
 
 Add-Content -Path .\lastVersion.txt -Value $versionNew 
