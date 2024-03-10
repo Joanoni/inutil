@@ -37,6 +37,7 @@ func server_Start(ss *Start_Server) *Server_Model {
 }
 
 func (s *Server_Model) Get(path string, h HandlerFunc) *mux.Route {
+	internalLogF("")
 	return s.Router.Get(path, func(wr http.ResponseWriter, req *http.Request) {
 		h(s.Context(req))
 	})
@@ -56,8 +57,8 @@ func (c *Context) JSON(payload Return[any]) {
 	if c.HandleError(err) {
 		return
 	}
-	c.wr.Write(payloadJ)
 	c.wr.WriteHeader(payload.Status)
+	c.wr.Write(payloadJ)
 	c.wr.Header().Set("Content-Type", ApplicationJSON)
 }
 
