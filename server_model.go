@@ -22,7 +22,19 @@ type Server_Model struct {
 }
 
 const (
+	Error_ContentTypeNotSet = "Content-Type header not set"
+
 	ApplicationJSON = "application/json"
+
+	MethodGet     = "GET"
+	MethodHead    = "HEAD"
+	MethodPost    = "POST"
+	MethodPut     = "PUT"
+	MethodPatch   = "PATCH" // RFC 5789
+	MethodDelete  = "DELETE"
+	MethodConnect = "CONNECT"
+	MethodOptions = "OPTIONS"
+	MethodTrace   = "TRACE"
 
 	StatusContinue           = 100 // RFC 9110, 15.2.1
 	StatusSwitchingProtocols = 101 // RFC 9110, 15.2.2

@@ -2,8 +2,10 @@ package inutil
 
 import (
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -37,8 +39,50 @@ func server_Start(ss *Start_Server) *Server_Model {
 }
 
 func (s *Server_Model) Get(path string, h HandlerFunc) *mux.Route {
-	internalLogF("")
+	internalLogF("Method: %v, Path: %v", MethodGet, path)
 	return s.Router.Get(path, func(wr http.ResponseWriter, req *http.Request) {
+		h(s.Context(req))
+	})
+}
+
+func (s *Server_Model) Head(path string, h HandlerFunc) *mux.Route {
+	internalLogF("Method: %v, Path: %v", MethodHead, path)
+	return s.Router.Head(path, func(wr http.ResponseWriter, req *http.Request) {
+		h(s.Context(req))
+	})
+}
+
+func (s *Server_Model) Post(path string, h HandlerFunc) *mux.Route {
+	internalLogF("Method: %v, Path: %v", MethodPost, path)
+	return s.Router.Post(path, func(wr http.ResponseWriter, req *http.Request) {
+		h(s.Context(req))
+	})
+}
+
+func (s *Server_Model) Put(path string, h HandlerFunc) *mux.Route {
+	internalLogF("Method: %v, Path: %v", MethodPut, path)
+	return s.Router.Put(path, func(wr http.ResponseWriter, req *http.Request) {
+		h(s.Context(req))
+	})
+}
+
+func (s *Server_Model) Patch(path string, h HandlerFunc) *mux.Route {
+	internalLogF("Method: %v, Path: %v", MethodPatch, path)
+	return s.Router.Patch(path, func(wr http.ResponseWriter, req *http.Request) {
+		h(s.Context(req))
+	})
+}
+
+func (s *Server_Model) Delete(path string, h HandlerFunc) *mux.Route {
+	internalLogF("Method: %v, Path: %v", MethodDelete, path)
+	return s.Router.Delete(path, func(wr http.ResponseWriter, req *http.Request) {
+		h(s.Context(req))
+	})
+}
+
+func (s *Server_Model) Options(path string, h HandlerFunc) *mux.Route {
+	internalLogF("Method: %v, Path: %v", MethodOptions, path)
+	return s.Router.Options(path, func(wr http.ResponseWriter, req *http.Request) {
 		h(s.Context(req))
 	})
 }
@@ -69,4 +113,20 @@ func (c *Context) HandleError(err error) bool {
 		return true
 	}
 	return false
+}
+
+func (c *Context) Body(output *any) error {
+	ct := c.req.Header.Get("Content-Type")
+	if ct != "" {
+		mediaType := strings.ToLower(strings.TrimSpace(strings.Split(ct, ";")[0]))
+		switch mediaType {
+		case ApplicationJSON:
+			dec := json.NewDecoder(c.req.Body)
+			err := dec.Decode(output)
+			return err
+		}
+	} else {
+		return errors.New(Error_ContentTypeNotSet)
+	}
+	return nil
 }
