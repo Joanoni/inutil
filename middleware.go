@@ -34,8 +34,7 @@ func middleware_cors_handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(wr http.ResponseWriter, req *http.Request) {
 
 		wr.Header().Add("Access-Control-Allow-Origin", "*")
-
+		// wr.Header().Add("Access-Control-Allow-Origin", "*")
 		next.ServeHTTP(wr, req)
-
 	})
 }
