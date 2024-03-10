@@ -7,3 +7,7 @@ var Server *mux.Router
 func StartServer() {
 	Server = mux.NewRouter()
 }
+
+func Oi() {
+	Print("oi")
+}
