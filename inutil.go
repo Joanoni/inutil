@@ -10,6 +10,10 @@ func Start(start *Start_Model) Inutil {
 	if startModel.Log != nil {
 		setupDebug()
 		setupInternalLog()
+		if startModel.Log.TimeFormat == "" {
+			startModel.Log.TimeFormat = LogFormat
+			Log("No log time format specified, using default")
+		}
 	} else {
 		startModel.Log = &Start_Log{
 			InternalLog: Start_Log_Envs{
