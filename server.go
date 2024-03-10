@@ -55,9 +55,9 @@ func (s *Server_Model) Context(req *http.Request) *Context {
 	return server.middleware_ch.Contexts[req]
 }
 
-func (s *Server_Model) JSON(c *Context, payload Return[any]) {
+func (c *Context) JSON(payload Return[any]) {
 	payloadJ, err := json.Marshal(payload)
-	if s.HandleError(c, err) {
+	if c.HandleError(err) {
 		return
 	}
 	c.wr.Write(payloadJ)
@@ -65,7 +65,7 @@ func (s *Server_Model) JSON(c *Context, payload Return[any]) {
 	c.wr.Header().Set("Content-Type", ApplicationJSON)
 }
 
-func (s *Server_Model) HandleError(c *Context, err error) bool {
+func (c *Context) HandleError(err error) bool {
 	if err != nil {
 		LogF("HandleError: %v", err.Error())
 		return true
