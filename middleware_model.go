@@ -13,7 +13,4 @@ type Context struct {
 	err  error
 }
 
-const (
-	contextError    = "error"
-	ApplicationJSON = "application/json"
-)
+const ()
