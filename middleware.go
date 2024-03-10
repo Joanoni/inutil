@@ -23,9 +23,19 @@ func middleware_context_handler(next http.Handler) http.Handler {
 }
 
 func middleware_log_handler(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		LogF("%s - %s (%s)", r.Method, r.URL.Path, r.RemoteAddr)
+	return http.HandlerFunc(func(wr http.ResponseWriter, req *http.Request) {
+		LogF("%s - %s (%s)", req.Method, req.URL.Path, req.RemoteAddr)
 
-		next.ServeHTTP(w, r)
+		next.ServeHTTP(wr, req)
+	})
+}
+
+func middleware_cors_handler(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(wr http.ResponseWriter, req *http.Request) {
+
+		wr.Header().Add("Access-Control-Allow-Origin", "*")
+
+		next.ServeHTTP(wr, req)
+
 	})
 }
