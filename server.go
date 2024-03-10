@@ -4,14 +4,14 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gorilla/mux"
+	"github.com/gorilla/pat"
 )
 
-var Router *mux.Router
+var Router *pat.Router
 var Server *http.Server
 
 func StartServer(address string) {
-	Router = mux.NewRouter()
+	Router = pat.New()
 
 	Server = &http.Server{
 		Addr: address, //"0.0.0.0:8080",
