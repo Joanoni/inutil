@@ -1,15 +1,22 @@
 package inutil
 
-import "log"
+import (
+	"fmt"
+	"log"
+)
 
-func Print(values ...string) {
-	log.Println(values)
+func Print(values ...any) {
+	fmt.Println(values...)
 }
 
-func Log(values ...string) {
-	log.Println(values)
+func PrintF(format string, values ...any) {
+	fmt.Printf(format+"\n", values...)
 }
 
-func Log2(values ...string) {
-	log.Println(values)
+func Log(values ...any) {
+	log.Println(values...)
+}
+
+func LogF(format string, values ...any) {
+	log.Printf(format+"\n", values...)
 }
