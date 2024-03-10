@@ -115,7 +115,7 @@ func (c *Context) HandleError(err error) bool {
 	return false
 }
 
-func (c *Context) Body(output *any) error {
+func (c *Context) Body(output any) error {
 	ct := c.req.Header.Get("Content-Type")
 	if ct != "" {
 		mediaType := strings.ToLower(strings.TrimSpace(strings.Split(ct, ";")[0]))
