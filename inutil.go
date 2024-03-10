@@ -3,9 +3,9 @@ package inutil
 var startModel *Start_Model
 
 func Start(start *Start_Model) Inutil {
-	Clear()
-	Log("Initializing")
 	out := Inutil{}
+
+	Clear()
 
 	startModel = start
 
@@ -34,6 +34,8 @@ func Start(start *Start_Model) Inutil {
 		setupInternalLog()
 		Log("No log specified, using default")
 	}
+
+	Log("Initializing...")
 
 	if startModel.Server != nil {
 		internalLog("Starting server")
