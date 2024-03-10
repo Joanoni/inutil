@@ -12,7 +12,11 @@ func logTime() string {
 }
 
 func Log(values ...any) {
-	LogF("", values...)
+	format := ""
+	for i := 0; i < len(values); i++ {
+		format += "%v"
+	}
+	LogF(format, values...)
 }
 
 func LogF(format string, values ...any) {
@@ -20,11 +24,12 @@ func LogF(format string, values ...any) {
 }
 
 func Error(err error) {
-	ErrorF("", err)
+	ErrorF("%v", err)
 }
 
-func ErrorF(format string, err error) {
-	color.Red(logTime()+"%v", err.Error())
+func ErrorF(format string, err error, values ...any) {
+	values = append([]any{err.Error()}, values...)
+	color.Red(logTime()+format, values...)
 }
 
 func Debug(values ...any) {
