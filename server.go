@@ -29,5 +29,6 @@ func Oi() {
 }
 
 func RunServer() {
+	LogF("Running server: ", Server.Addr)
 	log.Fatal(Server.ListenAndServe())
 }
