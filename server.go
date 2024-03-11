@@ -42,7 +42,7 @@ func (ss *Start_Server) start() *Server_Model {
 
 	server.Router.Use(middleware_context_handler)
 	server.Router.Use(middleware_log_handler)
-	// server.Router.Use(middleware_cors_handler)
+	server.Router.Use(middleware_cors_handler)
 
 	return server
 }

@@ -29,3 +29,21 @@ func middleware_log_handler(next http.Handler) http.Handler {
 		next.ServeHTTP(wr, req)
 	})
 }
+
+func middleware_cors_handler(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(wr http.ResponseWriter, req *http.Request) {
+		wr.Header().Add("Access-Control-Allow-Origin", "*")
+		wr.Header().Add("Access-Control-Allow-Credentials", "true")
+		wr.Header().Add("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		wr.Header().Add("Access-Control-Allow-Methods", "POST,OPTIONS,GET,PUT,DELETE,PATCH")
+		wr.Header().Add("X-Content-Type-Options", "nosniff")
+		wr.Header().Add("X-XSS-Protection", "1;mode=block")
+		wr.Header().Add("X-Frame-Options", "deny")
+		wr.Header().Add("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+		if req.Method == "OPTIONS" {
+			wr.WriteHeader(StatusNoContent)
+			return
+		}
+		next.ServeHTTP(wr, req)
+	})
+}
