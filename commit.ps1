@@ -38,7 +38,7 @@ git add .
 git commit -m $message  --quiet
 git tag $versionNew
 git tag latest -f
-git push origin $versionNew  
+git push
 
 "Pushed to git"
 
