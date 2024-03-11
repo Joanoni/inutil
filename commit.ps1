@@ -34,6 +34,9 @@ switch ($versionType) {
 
 "New version: " + $versionNew
 
+
+Add-Content -Path .\lastVersion.txt -Value $versionNew 
+
 git add .
 git commit -m $message  --quiet
 git tag $versionNew
@@ -42,5 +45,3 @@ git push
 git push origin $versionNew  
 
 "Pushed to git"
-
-Add-Content -Path .\lastVersion.txt -Value $versionNew 
