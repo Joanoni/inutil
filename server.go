@@ -139,5 +139,6 @@ func (c *Context) Body(output any) error {
 	} else {
 		return errors.New(Error_ContentTypeNotSet)
 	}
+	internalLog("body")
 	return nil
 }
