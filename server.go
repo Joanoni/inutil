@@ -27,6 +27,10 @@ func (ss *Start_Server) start() *Server_Model {
 
 	ss.port = ":" + strings.Split(ss.Address, ":")[1]
 
+	server.Router.Use(middleware_cors_handler)
+	server.Router.Use(middleware_context_handler)
+	server.Router.Use(middleware_log_handler)
+
 	server.HTTPServer = &http.Server{
 		Addr: ss.Address, //"0.0.0.0:8080",
 		// Good practice to set timeouts to avoid Slowloris attacks.
@@ -39,10 +43,6 @@ func (ss *Start_Server) start() *Server_Model {
 	server.middleware_ch = &middleware_context_model{
 		Contexts: map[*http.Request]*Context{},
 	}
-
-	server.Router.Use(middleware_context_handler)
-	server.Router.Use(middleware_log_handler)
-	server.Router.Use(middleware_cors_handler)
 
 	return server
 }
