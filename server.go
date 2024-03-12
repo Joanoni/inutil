@@ -10,6 +10,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/pat"
+	"github.com/rs/cors"
 )
 
 var server *Server_Model
@@ -48,7 +49,8 @@ func (ss *Start_Server) start() *Server_Model {
 
 func (s *Server_Model) Run() {
 	internalLogF("Running server: %v", s.HTTPServer.Addr)
-	log.Fatal(http.ListenAndServe(startModel.Server.port, s.Router))
+	handler := cors.AllowAll().Handler(s.Router)
+	log.Fatal(http.ListenAndServe(startModel.Server.port, handler))
 }
 
 func (s *Server_Model) Get(path string, h HandlerFunc) *mux.Route {
