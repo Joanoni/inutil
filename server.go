@@ -6,10 +6,8 @@ import (
 	"log"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/gorilla/pat"
 	"github.com/rs/cors"
 )
 
@@ -18,7 +16,7 @@ var server *Server_Model
 func (ss *Start_Server) start() *Server_Model {
 	server = &Server_Model{}
 
-	server.Router = pat.New()
+	server.Router = mux.NewRouter()
 
 	if !strings.Contains(ss.Address, ":") {
 		Debug("No port in address, using default 80")
@@ -27,18 +25,8 @@ func (ss *Start_Server) start() *Server_Model {
 
 	ss.port = ":" + strings.Split(ss.Address, ":")[1]
 
-	server.Router.Use(middleware_cors_handler)
 	server.Router.Use(middleware_context_handler)
 	server.Router.Use(middleware_log_handler)
-
-	server.HTTPServer = &http.Server{
-		Addr: ss.Address, //"0.0.0.0:8080",
-		// Good practice to set timeouts to avoid Slowloris attacks.
-		WriteTimeout: time.Second * 15,
-		ReadTimeout:  time.Second * 15,
-		IdleTimeout:  time.Second * 60,
-		Handler:      server.Router, // Pass our instance of gorilla/mux in.
-	}
 
 	server.middleware_ch = &middleware_context_model{
 		Contexts: map[*http.Request]*Context{},
@@ -48,58 +36,58 @@ func (ss *Start_Server) start() *Server_Model {
 }
 
 func (s *Server_Model) Run() {
-	internalLogF("Running server: %v", s.HTTPServer.Addr)
+	internalLogF("Running server: %v", startModel.Server.port)
 	handler := cors.AllowAll().Handler(s.Router)
 	log.Fatal(http.ListenAndServe(startModel.Server.port, handler))
 }
 
 func (s *Server_Model) Get(path string, h HandlerFunc) *mux.Route {
 	internalLogF("Method: %v, Path: %v", MethodGet, path)
-	return s.Router.Get(path, func(wr http.ResponseWriter, req *http.Request) {
+	return s.Router.HandleFunc(path, func(wr http.ResponseWriter, req *http.Request) {
 		h(s.Context(req))
-	})
+	}).Methods("GET")
 }
 
 func (s *Server_Model) Head(path string, h HandlerFunc) *mux.Route {
 	internalLogF("Method: %v, Path: %v", MethodHead, path)
-	return s.Router.Head(path, func(wr http.ResponseWriter, req *http.Request) {
+	return s.Router.HandleFunc(path, func(wr http.ResponseWriter, req *http.Request) {
 		h(s.Context(req))
-	})
+	}).Methods("HEAD")
 }
 
 func (s *Server_Model) Post(path string, h HandlerFunc) *mux.Route {
 	internalLogF("Method: %v, Path: %v", MethodPost, path)
-	return s.Router.Post(path, func(wr http.ResponseWriter, req *http.Request) {
+	return s.Router.HandleFunc(path, func(wr http.ResponseWriter, req *http.Request) {
 		h(s.Context(req))
-	})
+	}).Methods("POST")
 }
 
 func (s *Server_Model) Put(path string, h HandlerFunc) *mux.Route {
 	internalLogF("Method: %v, Path: %v", MethodPut, path)
-	return s.Router.Put(path, func(wr http.ResponseWriter, req *http.Request) {
+	return s.Router.HandleFunc(path, func(wr http.ResponseWriter, req *http.Request) {
 		h(s.Context(req))
-	})
+	}).Methods("PUT")
 }
 
 func (s *Server_Model) Patch(path string, h HandlerFunc) *mux.Route {
 	internalLogF("Method: %v, Path: %v", MethodPatch, path)
-	return s.Router.Patch(path, func(wr http.ResponseWriter, req *http.Request) {
+	return s.Router.HandleFunc(path, func(wr http.ResponseWriter, req *http.Request) {
 		h(s.Context(req))
-	})
+	}).Methods("PATCH")
 }
 
 func (s *Server_Model) Delete(path string, h HandlerFunc) *mux.Route {
 	internalLogF("Method: %v, Path: %v", MethodDelete, path)
-	return s.Router.Delete(path, func(wr http.ResponseWriter, req *http.Request) {
+	return s.Router.HandleFunc(path, func(wr http.ResponseWriter, req *http.Request) {
 		h(s.Context(req))
-	})
+	}).Methods("DELETE")
 }
 
 func (s *Server_Model) Options(path string, h HandlerFunc) *mux.Route {
 	internalLogF("Method: %v, Path: %v", MethodOptions, path)
-	return s.Router.Options(path, func(wr http.ResponseWriter, req *http.Request) {
+	return s.Router.HandleFunc(path, func(wr http.ResponseWriter, req *http.Request) {
 		h(s.Context(req))
-	})
+	}).Methods("OPTIONS")
 }
 
 func (s *Server_Model) Context(req *http.Request) *Context {

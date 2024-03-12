@@ -1,10 +1,6 @@
 package inutil
 
-import (
-	"net/http"
-
-	"github.com/gorilla/pat"
-)
+import "github.com/gorilla/mux"
 
 type HandlerFunc func(*Context)
 
@@ -16,8 +12,7 @@ type Return[V any] struct {
 }
 
 type Server_Model struct {
-	HTTPServer    *http.Server
-	Router        *pat.Router
+	Router        *mux.Router
 	middleware_ch *middleware_context_model
 }
 
