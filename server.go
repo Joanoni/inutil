@@ -34,7 +34,7 @@ func (s *Server_Model) Run() {
 	internalLogF("Running server: %v", startModel.Server.port)
 	// log.Fatal(http.ListenAndServe(startModel.Server.port, handler))
 
-	log.Fatal(http.ListenAndServe(startModel.Server.port, s.Mux))
+	log.Fatal(http.ListenAndServe(startModel.Server.port, s.Mid))
 }
 
 func (s *Server_Model) Get(path string, h HandlerFunc) {
