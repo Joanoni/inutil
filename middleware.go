@@ -32,6 +32,7 @@ func middleware_log_handler(next http.Handler) http.Handler {
 
 func middleware_cors_handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(wr http.ResponseWriter, req *http.Request) {
+		internalLog("entrou")
 		wr.Header().Add("Access-Control-Allow-Origin", "*")
 		wr.Header().Add("Access-Control-Allow-Credentials", "true")
 		wr.Header().Add("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
@@ -44,6 +45,7 @@ func middleware_cors_handler(next http.Handler) http.Handler {
 			wr.WriteHeader(StatusNoContent)
 			return
 		}
+		internalLog("passou")
 		next.ServeHTTP(wr, req)
 	})
 }
