@@ -1,7 +1,5 @@
 package inutil
 
-import "github.com/gorilla/mux"
-
 type HandlerFunc func(*Context)
 
 type Return[V any] struct {
@@ -12,7 +10,6 @@ type Return[V any] struct {
 }
 
 type Server_Model struct {
-	Router        *mux.Router
 	middleware_ch *middleware_context_model
 }
 
