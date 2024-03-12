@@ -1,6 +1,10 @@
 package inutil
 
-import "net/http"
+import (
+	"log"
+	"net/http"
+	"time"
+)
 
 type HandlerFunc func(*Context)
 
@@ -13,7 +17,37 @@ type Return[V any] struct {
 
 type Server_Model struct {
 	Mux           *http.ServeMux
+	Mid           *mid
 	middleware_ch *middleware_context_model
+}
+
+type mid struct {
+	handler http.Handler
+}
+
+// NewLogger constructs a new Logger middleware handler
+func NewLogger(handlerToWrap http.Handler) *mid {
+	return &mid{handlerToWrap}
+}
+
+func (l *mid) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	c := &Context{
+		wr:   w,
+		req:  r,
+		data: map[string]any{},
+	}
+	server.middleware_ch.Contexts[r] = c
+	l.handler.ServeHTTP(w, r)
+	log.Printf("%s %s %v", r.Method, r.URL.Path, time.Since(start))
+	if c.err != nil {
+		c.JSON(Return[any]{
+			Message: c.err.Error(),
+			Data:    nil,
+			Success: false,
+			Status:  StatusBadRequest,
+		})
+	}
 }
 
 const (

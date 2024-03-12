@@ -25,6 +25,7 @@ func (ss *Start_Server) start() *Server_Model {
 	}
 
 	server.Mux = http.NewServeMux()
+	server.Mid = NewLogger(server.Mux)
 
 	return server
 }
