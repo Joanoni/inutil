@@ -1,5 +1,7 @@
 package inutil
 
+import "net/http"
+
 type HandlerFunc func(*Context)
 
 type Return[V any] struct {
@@ -10,6 +12,7 @@ type Return[V any] struct {
 }
 
 type Server_Model struct {
+	Mux           *http.ServeMux
 	middleware_ch *middleware_context_model
 }
 
