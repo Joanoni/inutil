@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/pat"
 )
@@ -49,9 +48,7 @@ func (ss *Start_Server) start() *Server_Model {
 
 func (s *Server_Model) Run() {
 	internalLogF("Running server: %v", s.HTTPServer.Addr)
-	originsOk := handlers.AllowedOrigins([]string{"*"})
-	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
-	log.Fatal(http.ListenAndServe(startModel.Server.port, handlers.CORS(originsOk, methodsOk)(s.Router)))
+	log.Fatal(http.ListenAndServe(startModel.Server.port, s.Router))
 }
 
 func (s *Server_Model) Get(path string, h HandlerFunc) *mux.Route {
