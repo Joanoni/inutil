@@ -16,18 +16,13 @@ type Return[V any] struct {
 }
 
 type Server_Model struct {
-	Mux           *http.ServeMux
-	Mid           *mid
+	handler       http.Handler
+	mux           *http.ServeMux
 	middleware_ch *middleware_context_model
 }
 
 type mid struct {
 	handler http.Handler
-}
-
-// NewLogger constructs a new Logger middleware handler
-func NewLogger(handlerToWrap http.Handler) *mid {
-	return &mid{handlerToWrap}
 }
 
 func (l *mid) ServeHTTP(w http.ResponseWriter, r *http.Request) {

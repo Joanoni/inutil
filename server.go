@@ -20,68 +20,68 @@ func (ss *Start_Server) start() *Server_Model {
 
 	ss.port = ":" + strings.Split(ss.Address, ":")[1]
 
-	server.middleware_ch = &middleware_context_model{
-		Contexts: map[*http.Request]*Context{},
-	}
-
-	server.Mux = http.NewServeMux()
-	server.Mid = NewLogger(server.Mux)
+	server.mux = http.NewServeMux()
+	server.handler = server.mux
 
 	return server
+}
+
+func (ss *Start_Server) Use(h http.Handler) {
+	// server.handler = h(server.handler)
 }
 
 func (s *Server_Model) Run() {
 	internalLogF("Running server: %v", startModel.Server.port)
 	// log.Fatal(http.ListenAndServe(startModel.Server.port, handler))
 
-	log.Fatal(http.ListenAndServe(startModel.Server.port, s.Mid))
+	log.Fatal(http.ListenAndServe(startModel.Server.port, s.handler))
 }
 
 func (s *Server_Model) Get(path string, h HandlerFunc) {
 	internalLogF("Method: %v, Path: %v", MethodGet, path)
-	s.Mux.HandleFunc(path, func(wr http.ResponseWriter, req *http.Request) {
+	s.mux.HandleFunc(path, func(wr http.ResponseWriter, req *http.Request) {
 		h(s.Context(req))
 	})
 }
 
 func (s *Server_Model) Head(path string, h HandlerFunc) {
 	internalLogF("Method: %v, Path: %v", MethodHead, path)
-	s.Mux.HandleFunc(path, func(wr http.ResponseWriter, req *http.Request) {
+	s.mux.HandleFunc(path, func(wr http.ResponseWriter, req *http.Request) {
 		h(s.Context(req))
 	})
 }
 
 func (s *Server_Model) Post(path string, h HandlerFunc) {
 	internalLogF("Method: %v, Path: %v", MethodPost, path)
-	s.Mux.HandleFunc(path, func(wr http.ResponseWriter, req *http.Request) {
+	s.mux.HandleFunc(path, func(wr http.ResponseWriter, req *http.Request) {
 		h(s.Context(req))
 	})
 }
 
 func (s *Server_Model) Put(path string, h HandlerFunc) {
 	internalLogF("Method: %v, Path: %v", MethodPut, path)
-	s.Mux.HandleFunc(path, func(wr http.ResponseWriter, req *http.Request) {
+	s.mux.HandleFunc(path, func(wr http.ResponseWriter, req *http.Request) {
 		h(s.Context(req))
 	})
 }
 
 func (s *Server_Model) Patch(path string, h HandlerFunc) {
 	internalLogF("Method: %v, Path: %v", MethodPatch, path)
-	s.Mux.HandleFunc(path, func(wr http.ResponseWriter, req *http.Request) {
+	s.mux.HandleFunc(path, func(wr http.ResponseWriter, req *http.Request) {
 		h(s.Context(req))
 	})
 }
 
 func (s *Server_Model) Delete(path string, h HandlerFunc) {
 	internalLogF("Method: %v, Path: %v", MethodDelete, path)
-	s.Mux.HandleFunc(path, func(wr http.ResponseWriter, req *http.Request) {
+	s.mux.HandleFunc(path, func(wr http.ResponseWriter, req *http.Request) {
 		h(s.Context(req))
 	})
 }
 
 func (s *Server_Model) Options(path string, h HandlerFunc) {
 	internalLogF("Method: %v, Path: %v", MethodOptions, path)
-	s.Mux.HandleFunc(path, func(wr http.ResponseWriter, req *http.Request) {
+	s.mux.HandleFunc(path, func(wr http.ResponseWriter, req *http.Request) {
 		h(s.Context(req))
 	})
 }

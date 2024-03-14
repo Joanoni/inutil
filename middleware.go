@@ -2,7 +2,7 @@ package inutil
 
 import "net/http"
 
-func middleware_context_handler(next http.Handler) http.Handler {
+func middleware_context_handler(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(wr http.ResponseWriter, req *http.Request) {
 		c := &Context{
 			wr:   wr,
