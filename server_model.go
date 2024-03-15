@@ -1,12 +1,17 @@
 package inutil
 
 import (
-	"log"
 	"net/http"
-	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
-type HandlerFunc func(*Context)
+type HandlerFunc func(c *Context)
+
+type Context struct {
+	ginContext *gin.Context
+	err        error
+}
 
 type Return[V any] struct {
 	Message string `json:"message"`
@@ -16,33 +21,12 @@ type Return[V any] struct {
 }
 
 type Server_Model struct {
-	handler       http.Handler
-	mux           *http.ServeMux
-	middleware_ch *middleware_context_model
+	port   string
+	engine *gin.Engine
 }
 
 type mid struct {
 	handler http.Handler
-}
-
-func (l *mid) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	start := time.Now()
-	c := &Context{
-		wr:   w,
-		req:  r,
-		data: map[string]any{},
-	}
-	server.middleware_ch.Contexts[r] = c
-	l.handler.ServeHTTP(w, r)
-	log.Printf("%s %s %v", r.Method, r.URL.Path, time.Since(start))
-	if c.err != nil {
-		c.JSON(Return[any]{
-			Message: c.err.Error(),
-			Data:    nil,
-			Success: false,
-			Status:  StatusBadRequest,
-		})
-	}
 }
 
 const (
