@@ -25,12 +25,16 @@ func (ss *Start_Server) start() *Server_Model {
 	return server
 }
 
-func wrapperHandler(h HandlerFunc) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		h(&Context{
-			ginContext: c,
+func wrapperHandler(hfs ...HandlerFunc) []gin.HandlerFunc {
+	whfs := []gin.HandlerFunc{}
+	for _, hf := range hfs {
+		whfs = append(whfs, func(c *gin.Context) {
+			hf(&Context{
+				ginContext: c,
+			})
 		})
 	}
+	return whfs
 }
 
 func (s *Server_Model) Run() error {
@@ -39,36 +43,36 @@ func (s *Server_Model) Run() error {
 	return s.engine.Run(s.port)
 }
 
-func (s *Server_Model) Use(h HandlerFunc) {
-	s.engine.Use(wrapperHandler(h))
+func (s *Server_Model) Use(handlers ...HandlerFunc) {
+	s.engine.Use(wrapperHandler(handlers...)...)
 }
 
-func (s *Server_Model) Get(path string, h HandlerFunc) {
-	s.engine.GET(path, wrapperHandler(h))
+func (s *Server_Model) Get(path string, handlers ...HandlerFunc) {
+	s.engine.GET(path, wrapperHandler(handlers...)...)
 }
 
-func (s *Server_Model) Head(path string, h HandlerFunc) {
-	s.engine.HEAD(path, wrapperHandler(h))
+func (s *Server_Model) Head(path string, handlers ...HandlerFunc) {
+	s.engine.HEAD(path, wrapperHandler(handlers...)...)
 }
 
-func (s *Server_Model) Post(path string, h HandlerFunc) {
-	s.engine.POST(path, wrapperHandler(h))
+func (s *Server_Model) Post(path string, handlers ...HandlerFunc) {
+	s.engine.POST(path, wrapperHandler(handlers...)...)
 }
 
-func (s *Server_Model) Put(path string, h HandlerFunc) {
-	s.engine.PUT(path, wrapperHandler(h))
+func (s *Server_Model) Put(path string, handlers ...HandlerFunc) {
+	s.engine.PUT(path, wrapperHandler(handlers...)...)
 }
 
-func (s *Server_Model) Patch(path string, h HandlerFunc) {
-	s.engine.PATCH(path, wrapperHandler(h))
+func (s *Server_Model) Patch(path string, handlers ...HandlerFunc) {
+	s.engine.PATCH(path, wrapperHandler(handlers...)...)
 }
 
-func (s *Server_Model) Delete(path string, h HandlerFunc) {
-	s.engine.DELETE(path, wrapperHandler(h))
+func (s *Server_Model) Delete(path string, handlers ...HandlerFunc) {
+	s.engine.DELETE(path, wrapperHandler(handlers...)...)
 }
 
-func (s *Server_Model) Options(path string, h HandlerFunc) {
-	s.engine.OPTIONS(path, wrapperHandler(h))
+func (s *Server_Model) Options(path string, handlers ...HandlerFunc) {
+	s.engine.OPTIONS(path, wrapperHandler(handlers...)...)
 }
 
 func (c *Context) JSON(payload Return[any]) {
