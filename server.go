@@ -22,8 +22,6 @@ func (ss *Start_Server) start() *Server_Model {
 
 	server.engine = gin.Default()
 
-	server.engine.Use(gin.Logger())
-
 	return server
 }
 
@@ -41,32 +39,36 @@ func (s *Server_Model) Run() error {
 	return s.engine.Run(s.port)
 }
 
+func (s *Server_Model) Use(h HandlerFunc) {
+	s.engine.Use(wrapperHandler(h))
+}
+
 func (s *Server_Model) Get(path string, h HandlerFunc) {
 	s.engine.GET(path, wrapperHandler(h))
 }
 
 func (s *Server_Model) Head(path string, h HandlerFunc) {
-	s.engine.GET(path, wrapperHandler(h))
+	s.engine.HEAD(path, wrapperHandler(h))
 }
 
 func (s *Server_Model) Post(path string, h HandlerFunc) {
-	s.engine.GET(path, wrapperHandler(h))
+	s.engine.POST(path, wrapperHandler(h))
 }
 
 func (s *Server_Model) Put(path string, h HandlerFunc) {
-	s.engine.GET(path, wrapperHandler(h))
+	s.engine.PUT(path, wrapperHandler(h))
 }
 
 func (s *Server_Model) Patch(path string, h HandlerFunc) {
-	s.engine.GET(path, wrapperHandler(h))
+	s.engine.PATCH(path, wrapperHandler(h))
 }
 
 func (s *Server_Model) Delete(path string, h HandlerFunc) {
-	s.engine.GET(path, wrapperHandler(h))
+	s.engine.DELETE(path, wrapperHandler(h))
 }
 
 func (s *Server_Model) Options(path string, h HandlerFunc) {
-	s.engine.GET(path, wrapperHandler(h))
+	s.engine.OPTIONS(path, wrapperHandler(h))
 }
 
 func (c *Context) JSON(payload Return[any]) {
