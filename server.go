@@ -26,8 +26,8 @@ func (ss *Start_Server) start() *Server_Model {
 	return server
 }
 
-func (ss *Start_Server) Use(h http.Handler) {
-	// server.handler = h(server.handler)
+func (ss *Server_Model) Use(h http.Handler) {
+	http.ListenAndServe(startModel.Server.port, h)
 }
 
 func (s *Server_Model) Run() {
