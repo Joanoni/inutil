@@ -22,6 +22,8 @@ func (ss *Start_Server) start() *Server_Model {
 
 	server.engine = gin.Default()
 
+	server.engine.Use(gin.Logger())
+
 	return server
 }
 
