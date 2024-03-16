@@ -108,6 +108,10 @@ func setupInternalLog() {
 	}
 }
 
+func JSON[T any](payload Return[any], c *Context) {
+	c.gc.JSON(payload.Status, payload)
+}
+
 const (
 	Enviroment_Development = "development"
 	Enviroment_Stage       = "stage"
