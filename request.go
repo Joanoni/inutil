@@ -42,30 +42,30 @@ func Request[T any](input RequestInput, c *Context) Return[RequestReponse[*T]] {
 			body, err = json.Marshal(input.Payload.Body)
 			if c.HandleError(err) {
 				return Return[RequestReponse[*T]]{
-					Message: err.Error(),
-					Data:    nil,
-					Success: false,
-					Status:  StatusBadRequest,
+					Message:    err.Error(),
+					Data:       nil,
+					Success:    false,
+					StatusCode: StatusBadRequest,
 				}
 			}
 		}
 		req, err = http.NewRequest(strings.ToUpper(input.Method), input.Url, bytes.NewReader(body))
 		if c.HandleError(err) {
 			return Return[RequestReponse[*T]]{
-				Message: err.Error(),
-				Data:    nil,
-				Success: false,
-				Status:  StatusBadRequest,
+				Message:    err.Error(),
+				Data:       nil,
+				Success:    false,
+				StatusCode: StatusBadRequest,
 			}
 		}
 	} else {
 		req, err = http.NewRequest(strings.ToUpper(input.Method), input.Url, nil)
 		if c.HandleError(err) {
 			return Return[RequestReponse[*T]]{
-				Message: err.Error(),
-				Data:    nil,
-				Success: false,
-				Status:  StatusBadRequest,
+				Message:    err.Error(),
+				Data:       nil,
+				Success:    false,
+				StatusCode: StatusBadRequest,
 			}
 		}
 	}
@@ -73,10 +73,10 @@ func Request[T any](input RequestInput, c *Context) Return[RequestReponse[*T]] {
 	resp, err := client.Do(req)
 	if c.HandleError(err) {
 		return Return[RequestReponse[*T]]{
-			Message: err.Error(),
-			Data:    nil,
-			Success: false,
-			Status:  StatusBadRequest,
+			Message:    err.Error(),
+			Data:       nil,
+			Success:    false,
+			StatusCode: StatusBadRequest,
 		}
 	}
 
@@ -88,8 +88,8 @@ func Request[T any](input RequestInput, c *Context) Return[RequestReponse[*T]] {
 			Data: &RequestReponse[*T]{
 				StatusCode: resp.StatusCode,
 			},
-			Success: false,
-			Status:  StatusBadRequest,
+			Success:    false,
+			StatusCode: StatusBadRequest,
 		}
 	}
 
@@ -102,8 +102,8 @@ func Request[T any](input RequestInput, c *Context) Return[RequestReponse[*T]] {
 				Data: &RequestReponse[*T]{
 					StatusCode: resp.StatusCode,
 				},
-				Success: false,
-				Status:  StatusBadRequest,
+				Success:    false,
+				StatusCode: StatusBadRequest,
 			}
 		}
 	}
@@ -114,7 +114,7 @@ func Request[T any](input RequestInput, c *Context) Return[RequestReponse[*T]] {
 			StatusCode: resp.StatusCode,
 			Body:       parsedBody,
 		},
-		Success: true,
-		Status:  StatusOK,
+		Success:    true,
+		StatusCode: StatusOK,
 	}
 }

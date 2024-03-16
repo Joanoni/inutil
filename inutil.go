@@ -1,10 +1,10 @@
 package inutil
 
 type Return[V any] struct {
-	Message string `json:"message"`
-	Data    *V     `json:"data"`
-	Success bool   `json:"success"`
-	Status  int    `json:"-"`
+	Message    string `json:"message"`
+	Data       *V     `json:"data"`
+	Success    bool   `json:"success"`
+	StatusCode int    `json:"-"`
 }
 
 type StartInput struct {
@@ -109,7 +109,7 @@ func setupInternalLog() {
 }
 
 func JSON[T any](payload Return[T], c *Context) {
-	c.gc.JSON(payload.Status, payload)
+	c.gc.JSON(payload.StatusCode, payload)
 }
 
 const (
