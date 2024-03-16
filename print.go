@@ -1,6 +1,7 @@
 package inutil
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -33,6 +34,15 @@ func Clear() {
 	} else { //unsupported platform
 		panic("Your platform is unsupported! I can't clear terminal screen :(")
 	}
+}
+
+func LogDebugPretty(v any) error {
+	b, err := json.MarshalIndent(v, "", "  ")
+	if err != nil {
+		return err
+	}
+	LogDebug(string(b))
+	return nil
 }
 
 func logTime() string {
