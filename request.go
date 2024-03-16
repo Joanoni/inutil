@@ -93,9 +93,11 @@ func Request[T any](input RequestInput, c *Context) Return[RequestReponse[*T]] {
 		}
 	}
 
-	var parsedBody *T
+	logInternal(string(bodyBytes))
+
+	var parsedBody T
 	if len(bodyBytes) > 0 {
-		err = json.Unmarshal(bodyBytes, parsedBody)
+		err = json.Unmarshal(bodyBytes, &parsedBody)
 		if c.HandleError(err) {
 			return Return[RequestReponse[*T]]{
 				Message: err.Error(),
@@ -108,11 +110,13 @@ func Request[T any](input RequestInput, c *Context) Return[RequestReponse[*T]] {
 		}
 	}
 
+	logInternalPretty(parsedBody)
+
 	return Return[RequestReponse[*T]]{
 		Message: "success",
 		Data: &RequestReponse[*T]{
 			StatusCode: resp.StatusCode,
-			Body:       parsedBody,
+			Body:       &parsedBody,
 		},
 		Success:    true,
 		StatusCode: StatusOK,
