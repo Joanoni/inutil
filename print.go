@@ -51,22 +51,22 @@ func LogF(format string, values ...any) {
 	fmt.Printf(logTime()+" "+format+"\n", values...)
 }
 
-func Error(err error) {
-	ErrorF("%v", err)
+func LogError(err error) {
+	LogErrorF("%v", err)
 }
 
-func ErrorF(format string, err error, values ...any) {
+func LogErrorF(format string, err error, values ...any) {
 	values = append([]any{err.Error()}, values...)
 	color.Red(logTime()+" "+format, values...)
 }
 
-func Debug(values ...any) {
+func LogDebug(values ...any) {
 	if checkDebug() {
 		Log(values...)
 	}
 }
 
-func DebugF(format string, values ...any) {
+func LogDebugF(format string, values ...any) {
 	if checkDebug() {
 		LogF(format, values...)
 	}
@@ -81,19 +81,19 @@ func checkDebug() bool {
 	return false
 }
 
-func internalLog(values ...any) {
-	if checkInternalLog() {
+func logInternal(values ...any) {
+	if checkLogInternal() {
 		Log(values...)
 	}
 }
 
-func internalLogF(format string, values ...any) {
-	if checkInternalLog() {
+func logInternalF(format string, values ...any) {
+	if checkLogInternal() {
 		LogF(format, values...)
 	}
 }
 
-func checkInternalLog() bool {
+func checkLogInternal() bool {
 	for _, env := range startModel.Log.internalLogEnvs {
 		if env == startModel.Enviroment {
 			return true

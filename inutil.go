@@ -1,8 +1,36 @@
 package inutil
 
-var startModel *Start_Model
+type StartInput struct {
+	Server     *StartServerInput
+	Log        *StartLogInput
+	Enviroment string
+}
 
-func Start(start *Start_Model) Inutil {
+type StartLogInput struct {
+	InternalLog     StartLogEnvInput
+	internalLogEnvs []string
+	DebugLog        StartLogEnvInput
+	debugEnvs       []string
+	TimeFormat      string
+}
+
+type StartLogEnvInput struct {
+	Development bool
+	Stage       bool
+	Production  bool
+}
+
+type StartServerInput struct {
+	Port string
+}
+
+type Inutil struct {
+	Server *Server
+}
+
+var startModel *StartInput
+
+func Start(start *StartInput) Inutil {
 	out := Inutil{}
 
 	Clear()
@@ -17,13 +45,13 @@ func Start(start *Start_Model) Inutil {
 			Log("No log time format specified, using default")
 		}
 	} else {
-		startModel.Log = &Start_Log{
-			InternalLog: Start_Log_Envs{
+		startModel.Log = &StartLogInput{
+			InternalLog: StartLogEnvInput{
 				Development: true,
 				Stage:       false,
 				Production:  false,
 			},
-			DebugLog: Start_Log_Envs{
+			DebugLog: StartLogEnvInput{
 				Development: true,
 				Stage:       true,
 				Production:  false,
@@ -38,7 +66,7 @@ func Start(start *Start_Model) Inutil {
 	Log("Initializing...")
 
 	if startModel.Server != nil {
-		internalLog("Starting server")
+		logInternal("Starting server")
 		out.Server = startModel.Server.start()
 	}
 
@@ -70,3 +98,31 @@ func setupInternalLog() {
 		startModel.Log.internalLogEnvs = append(startModel.Log.internalLogEnvs, Enviroment_Production)
 	}
 }
+
+const (
+	Enviroment_Development = "development"
+	Enviroment_Stage       = "stage"
+	Enviroment_Production  = "production"
+
+	Layout      = "01/02 03:04:05PM '06 -0700" // The reference time, in numerical order.
+	ANSIC       = "Mon Jan _2 15:04:05 2006"
+	UnixDate    = "Mon Jan _2 15:04:05 MST 2006"
+	RubyDate    = "Mon Jan 02 15:04:05 -0700 2006"
+	RFC822      = "02 Jan 06 15:04 MST"
+	RFC822Z     = "02 Jan 06 15:04 -0700" // RFC822 with numeric zone
+	RFC850      = "Monday, 02-Jan-06 15:04:05 MST"
+	RFC1123     = "Mon, 02 Jan 2006 15:04:05 MST"
+	RFC1123Z    = "Mon, 02 Jan 2006 15:04:05 -0700" // RFC1123 with numeric zone
+	RFC3339     = "2006-01-02T15:04:05Z07:00"
+	RFC3339Nano = "2006-01-02T15:04:05.999999999Z07:00"
+	Kitchen     = "3:04PM"
+	// Handy time stamps.
+	Stamp      = "Jan _2 15:04:05"
+	StampMilli = "Jan _2 15:04:05.000"
+	StampMicro = "Jan _2 15:04:05.000000"
+	StampNano  = "Jan _2 15:04:05.000000000"
+	DateTime   = "2006-01-02 15:04:05"
+	DateOnly   = "2006-01-02"
+	TimeOnly   = "15:04:05"
+	LogFormat  = "2006-01-02 15:04:05.000"
+)
