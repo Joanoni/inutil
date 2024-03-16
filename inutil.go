@@ -65,6 +65,8 @@ func Start(start *StartInput) Inutil {
 
 	Log("Initializing...")
 
+	startRequest()
+
 	if startModel.Server != nil {
 		logInternal("Starting server")
 		out.Server = startModel.Server.start()

@@ -2,7 +2,6 @@ package inutil
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/render"
 )
 
 type Server struct {
@@ -72,14 +71,12 @@ func (s *Server) Options(path string, handlers ...HandlerFunc) {
 	s.engine.OPTIONS(path, wrapperHandlersToGin(handlers...)...)
 }
 
-func (c *Context) JSON(payload Return[any]) {
-	c.Render(payload.Status, render.JSON{Data: payload})
-}
-
 const (
 	Error_ContentTypeNotSet = "Content-Type header not set"
 
 	ApplicationJSON = "application/json"
+
+	HeaderContentType = "Content-Type"
 
 	MethodGet     = "GET"
 	MethodHead    = "HEAD"

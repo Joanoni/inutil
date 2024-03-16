@@ -46,3 +46,7 @@ func (c *Context) Body(output any) error {
 	logInternal("body")
 	return nil
 }
+
+func (c *Context) JSON(payload Return[any]) {
+	c.gc.JSON(payload.Status, payload)
+}
