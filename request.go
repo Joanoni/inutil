@@ -10,7 +10,7 @@ import (
 type RequestInput struct {
 	Method  string
 	Url     string
-	Payload RequestPayloadInput
+	Payload *RequestPayloadInput
 }
 
 type RequestPayloadInput struct {
@@ -27,13 +27,24 @@ func startRequest() {
 func Request[T any](input RequestInput, c *Context) Return[T] {
 	headers := http.Header{}
 	var err error
-
 	var body []byte
+	var req *http.Request
 
-	switch input.Payload.ContentType {
-	case ApplicationJSON:
-		headers.Set(HeaderContentType, ApplicationJSON)
-		body, err = json.Marshal(input.Payload.Body)
+	if input.Payload != nil {
+		switch input.Payload.ContentType {
+		case ApplicationJSON:
+			headers.Set(HeaderContentType, ApplicationJSON)
+			body, err = json.Marshal(input.Payload.Body)
+			if c.HandleError(err) {
+				return Return[T]{
+					Message: err.Error(),
+					Data:    nil,
+					Success: false,
+					Status:  StatusBadRequest,
+				}
+			}
+		}
+		req, err = http.NewRequest(strings.ToUpper(input.Method), input.Url, bytes.NewReader(body))
 		if c.HandleError(err) {
 			return Return[T]{
 				Message: err.Error(),
@@ -42,15 +53,15 @@ func Request[T any](input RequestInput, c *Context) Return[T] {
 				Status:  StatusBadRequest,
 			}
 		}
-	}
-
-	req, err := http.NewRequest(strings.ToUpper(input.Method), input.Url, bytes.NewReader(body))
-	if c.HandleError(err) {
-		return Return[T]{
-			Message: err.Error(),
-			Data:    nil,
-			Success: false,
-			Status:  StatusBadRequest,
+	} else {
+		req, err = http.NewRequest(strings.ToUpper(input.Method), input.Url, nil)
+		if c.HandleError(err) {
+			return Return[T]{
+				Message: err.Error(),
+				Data:    nil,
+				Success: false,
+				Status:  StatusBadRequest,
+			}
 		}
 	}
 
