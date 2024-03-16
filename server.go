@@ -9,13 +9,6 @@ type Server struct {
 	engine *gin.Engine
 }
 
-type Return[V any] struct {
-	Message string `json:"message"`
-	Data    V      `json:"data"`
-	Success bool   `json:"success"`
-	Status  int    `json:"-"`
-}
-
 var server *Server
 
 func (ss *StartServerInput) start() *Server {

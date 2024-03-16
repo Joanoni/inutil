@@ -23,7 +23,7 @@ func startRequest() {
 	client = &http.Client{}
 }
 
-func Request[T any](input RequestInput, c *Context) Return[*T] {
+func Request[T any](input RequestInput, c *Context) Return[T] {
 	var headers http.Header
 	var err error
 
@@ -34,7 +34,7 @@ func Request[T any](input RequestInput, c *Context) Return[*T] {
 		headers.Set(HeaderContentType, ApplicationJSON)
 		body, err = json.Marshal(input.Payload.Body)
 		if c.HandleError(err) {
-			return Return[*T]{
+			return Return[T]{
 				Message: err.Error(),
 				Data:    nil,
 				Success: false,
@@ -45,7 +45,7 @@ func Request[T any](input RequestInput, c *Context) Return[*T] {
 
 	req, err := http.NewRequest(strings.ToUpper(input.Method), input.Method, bytes.NewReader(body))
 	if c.HandleError(err) {
-		return Return[*T]{
+		return Return[T]{
 			Message: err.Error(),
 			Data:    nil,
 			Success: false,
@@ -55,7 +55,7 @@ func Request[T any](input RequestInput, c *Context) Return[*T] {
 
 	resp, err := client.Do(req)
 	if c.HandleError(err) {
-		return Return[*T]{
+		return Return[T]{
 			Message: err.Error(),
 			Data:    nil,
 			Success: false,
@@ -66,7 +66,7 @@ func Request[T any](input RequestInput, c *Context) Return[*T] {
 	var bodyBytes []byte
 	_, err = resp.Body.Read(bodyBytes)
 	if c.HandleError(err) {
-		return Return[*T]{
+		return Return[T]{
 			Message: err.Error(),
 			Data:    nil,
 			Success: false,
@@ -77,7 +77,7 @@ func Request[T any](input RequestInput, c *Context) Return[*T] {
 	var parsedBody *T
 	err = json.Unmarshal(bodyBytes, parsedBody)
 	if c.HandleError(err) {
-		return Return[*T]{
+		return Return[T]{
 			Message: err.Error(),
 			Data:    nil,
 			Success: false,
@@ -85,7 +85,7 @@ func Request[T any](input RequestInput, c *Context) Return[*T] {
 		}
 	}
 
-	return Return[*T]{
+	return Return[T]{
 		Message: "success",
 		Data:    parsedBody,
 		Success: true,
