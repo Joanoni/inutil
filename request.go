@@ -86,16 +86,16 @@ func Request[T any](input RequestInput, c *Context) Return[T] {
 		}
 	}
 
-	logInternal("bodyBytes", bodyBytes)
-
 	var parsedBody *T
-	err = json.Unmarshal(bodyBytes, parsedBody)
-	if c.HandleError(err) {
-		return Return[T]{
-			Message: err.Error(),
-			Data:    nil,
-			Success: false,
-			Status:  StatusBadRequest,
+	if len(bodyBytes) > 0 {
+		err = json.Unmarshal(bodyBytes, parsedBody)
+		if c.HandleError(err) {
+			return Return[T]{
+				Message: err.Error(),
+				Data:    nil,
+				Success: false,
+				Status:  StatusBadRequest,
+			}
 		}
 	}
 
