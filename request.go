@@ -3,6 +3,7 @@ package inutil
 import (
 	"bytes"
 	"encoding/json"
+	"io"
 	"net/http"
 	"strings"
 )
@@ -81,7 +82,7 @@ func Request[T any](input RequestInput, c *Context) Return[RequestReponse[*T]] {
 	}
 
 	var bodyBytes []byte
-	_, err = resp.Body.Read(bodyBytes)
+	bodyBytes, err = io.ReadAll(resp.Body)
 	if c.HandleError(err) {
 		return Return[RequestReponse[*T]]{
 			Message: err.Error(),
