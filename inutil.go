@@ -108,7 +108,7 @@ func setupInternalLog() {
 	}
 }
 
-func JSON[T any](payload Return[any], c *Context) {
+func JSON[T any](payload Return[T], c *Context) {
 	c.gc.JSON(payload.Status, payload)
 }
 
