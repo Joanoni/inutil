@@ -4,11 +4,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func MiddlewareLog(c HandlerFunc) HandlerFunc {
+func MiddlewareLog() HandlerFunc {
 	return HandlerFunc(wrapperHandlerFromGin(gin.Logger()))
 }
 
-func MiddlewareCors(c HandlerFunc) HandlerFunc {
+func MiddlewareCors() HandlerFunc {
 	return HandlerFunc(func(c *Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
