@@ -12,6 +12,7 @@ type RequestInput struct {
 	Method  string
 	Url     string
 	Payload *RequestPayloadInput
+	Header  http.Header
 }
 
 type RequestPayloadInput struct {
@@ -31,15 +32,17 @@ func startRequest() {
 }
 
 func Request[T any](input RequestInput, c *Context) Return[RequestReponse[*T]] {
-	headers := http.Header{}
 	var err error
 	var body []byte
 	var req *http.Request
+	if input.Header == nil {
+		input.Header = http.Header{}
+	}
 
 	if input.Payload != nil {
 		switch input.Payload.ContentType {
 		case ApplicationJSON:
-			headers.Set(HeaderContentType, ApplicationJSON)
+			input.Header.Set(HeaderContentType, ApplicationJSON)
 			body, err = json.Marshal(input.Payload.Body)
 			if c.HandleError(err) {
 				return Return[RequestReponse[*T]]{
@@ -70,6 +73,8 @@ func Request[T any](input RequestInput, c *Context) Return[RequestReponse[*T]] {
 			}
 		}
 	}
+
+	req.Header = input.Header
 
 	resp, err := client.Do(req)
 	if c.HandleError(err) {
