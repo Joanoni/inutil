@@ -1,16 +1,17 @@
 package inutil
 
-import "net/http"
+import (
+	"github.com/gin-gonic/gin"
+)
 
-func middleware_log_handler(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(wr http.ResponseWriter, req *http.Request) {
-		LogF("%s - %s (%s)", req.Method, req.URL.Path, req.RemoteAddr)
-		req.Context()
-		next.ServeHTTP(wr, req)
-	})
+type Middleware struct {
 }
 
-func middleware_cors_handler(c HandlerFunc) HandlerFunc {
+func (m *Middleware) Log(c HandlerFunc) HandlerFunc {
+	return HandlerFunc(wrapperHandlerFromGin(gin.Logger()))
+}
+
+func (m *Middleware) Cors(c HandlerFunc) HandlerFunc {
 	return HandlerFunc(func(c *Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")

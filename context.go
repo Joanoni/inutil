@@ -10,6 +10,15 @@ import (
 
 type Context struct {
 	*gin.Context
+	gc *gin.Context
+}
+
+func convertContextFromGin(gc *gin.Context) *Context {
+	return &Context{gc, gc}
+}
+
+func convertContextToGin(c *Context) *gin.Context {
+	return c.gc
 }
 
 func (c *Context) HandleError(err error) bool {

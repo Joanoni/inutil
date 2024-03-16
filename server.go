@@ -5,8 +5,6 @@ import (
 	"github.com/gin-gonic/gin/render"
 )
 
-type HandlerFunc func(c *Context)
-
 type Server struct {
 	port   string
 	engine *gin.Engine
@@ -31,23 +29,9 @@ func (ss *StartServerInput) start() *Server {
 		server.port = ss.Port
 	}
 
-	server.engine = gin.Default()
+	server.engine = gin.New()
 
 	return server
-}
-
-func wrapperHandler(hfs ...HandlerFunc) []gin.HandlerFunc {
-	whfs := []gin.HandlerFunc{}
-	for _, hf := range hfs {
-		whfs = append(whfs, func(c *gin.Context) {
-			hf(convertContext(c))
-		})
-	}
-	return whfs
-}
-
-func convertContext(gc *gin.Context) *Context {
-	return &Context{gc}
 }
 
 func (s *Server) Run() error {
@@ -57,35 +41,35 @@ func (s *Server) Run() error {
 }
 
 func (s *Server) Use(handlers ...HandlerFunc) {
-	s.engine.Use(wrapperHandler(handlers...)...)
+	s.engine.Use(wrapperHandlersToGin(handlers...)...)
 }
 
 func (s *Server) Get(path string, handlers ...HandlerFunc) {
-	s.engine.GET(path, wrapperHandler(handlers...)...)
+	s.engine.GET(path, wrapperHandlersToGin(handlers...)...)
 }
 
 func (s *Server) Head(path string, handlers ...HandlerFunc) {
-	s.engine.HEAD(path, wrapperHandler(handlers...)...)
+	s.engine.HEAD(path, wrapperHandlersToGin(handlers...)...)
 }
 
 func (s *Server) Post(path string, handlers ...HandlerFunc) {
-	s.engine.POST(path, wrapperHandler(handlers...)...)
+	s.engine.POST(path, wrapperHandlersToGin(handlers...)...)
 }
 
 func (s *Server) Put(path string, handlers ...HandlerFunc) {
-	s.engine.PUT(path, wrapperHandler(handlers...)...)
+	s.engine.PUT(path, wrapperHandlersToGin(handlers...)...)
 }
 
 func (s *Server) Patch(path string, handlers ...HandlerFunc) {
-	s.engine.PATCH(path, wrapperHandler(handlers...)...)
+	s.engine.PATCH(path, wrapperHandlersToGin(handlers...)...)
 }
 
 func (s *Server) Delete(path string, handlers ...HandlerFunc) {
-	s.engine.DELETE(path, wrapperHandler(handlers...)...)
+	s.engine.DELETE(path, wrapperHandlersToGin(handlers...)...)
 }
 
 func (s *Server) Options(path string, handlers ...HandlerFunc) {
-	s.engine.OPTIONS(path, wrapperHandler(handlers...)...)
+	s.engine.OPTIONS(path, wrapperHandlersToGin(handlers...)...)
 }
 
 func (c *Context) JSON(payload Return[any]) {
