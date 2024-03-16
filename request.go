@@ -9,6 +9,7 @@ import (
 
 type RequestInput struct {
 	Method  string
+	Url     string
 	Payload RequestPayloadInput
 }
 
@@ -43,7 +44,7 @@ func Request[T any](input RequestInput, c *Context) Return[T] {
 		}
 	}
 
-	req, err := http.NewRequest(strings.ToUpper(input.Method), input.Method, bytes.NewReader(body))
+	req, err := http.NewRequest(strings.ToUpper(input.Method), input.Url, bytes.NewReader(body))
 	if c.HandleError(err) {
 		return Return[T]{
 			Message: err.Error(),
