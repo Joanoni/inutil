@@ -91,6 +91,15 @@ func checkDebug() bool {
 	return false
 }
 
+func logInternalPretty(v any) error {
+	b, err := json.MarshalIndent(v, "", "  ")
+	if err != nil {
+		return err
+	}
+	logInternal(string(b))
+	return nil
+}
+
 func logInternal(values ...any) {
 	if checkLogInternal() {
 		Log(values...)

@@ -86,6 +86,8 @@ func Request[T any](input RequestInput, c *Context) Return[T] {
 		}
 	}
 
+	logInternal("bodyBytes", bodyBytes)
+
 	var parsedBody *T
 	err = json.Unmarshal(bodyBytes, parsedBody)
 	if c.HandleError(err) {
