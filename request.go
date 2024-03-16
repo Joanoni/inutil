@@ -24,7 +24,7 @@ func startRequest() {
 }
 
 func Request[T any](input RequestInput, c *Context) Return[T] {
-	var headers http.Header
+	headers := http.Header{}
 	var err error
 
 	var body []byte
