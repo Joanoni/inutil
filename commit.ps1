@@ -42,6 +42,7 @@ git commit -m $message  --quiet
 git tag $versionNew
 git tag latest -f
 git push --tags --force
+git push
 git push origin $versionNew  
 
 "Pushed to git"
