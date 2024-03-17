@@ -25,7 +25,14 @@ func MiddlewareCors() HandlerFunc {
 
 }
 
-// wr.Header().Add("X-Content-Type-Options", "nosniff")
-// wr.Header().Add("X-XSS-Protection", "1;mode=block")
-// wr.Header().Add("X-Frame-Options", "deny")
-// wr.Header().Add("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+func SafetyCors() HandlerFunc {
+	return HandlerFunc(func(c *Context) {
+		c.Writer.Header().Add("X-Content-Type-Options", "nosniff")
+		c.Writer.Header().Add("X-XSS-Protection", "1;mode=block")
+		c.Writer.Header().Add("X-Frame-Options", "deny")
+		c.Writer.Header().Add("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+
+		c.Next()
+	})
+
+}
