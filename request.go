@@ -99,7 +99,7 @@ func Request[T any](input RequestInput, c *Context) Return[RequestReponse[*T]] {
 		}
 	}
 
-	logInternal(string(bodyBytes))
+	logInternal("Request: string(bodyBytes)", string(bodyBytes))
 
 	var parsedBody T
 	if len(bodyBytes) > 0 {
