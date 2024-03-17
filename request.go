@@ -39,6 +39,9 @@ func Request[T any](input RequestInput, c *Context) Return[RequestReponse[*T]] {
 		input.Header = http.Header{}
 	}
 
+	logInternal("input")
+	logInternalPretty(input)
+
 	if input.Payload != nil {
 		switch input.Payload.ContentType {
 		case ApplicationJSON:
