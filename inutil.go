@@ -79,6 +79,8 @@ func Start(start *StartInput) Inutil {
 		out.Server = startModel.Server.start()
 	}
 
+	out.Server.Get("/ws", WebsocketHandler)
+
 	return out
 }
 
