@@ -16,8 +16,7 @@ type RequestInput struct {
 }
 
 type RequestPayloadInput struct {
-	Body        any
-	ContentType string
+	Body any
 }
 
 type RequestReponse[T any] struct {
@@ -33,26 +32,29 @@ func startRequest() {
 
 func Request[T any](input RequestInput, c *Context) Return[RequestReponse[*T]] {
 	var err error
-	var body []byte
 	var req *http.Request
+
 	if input.Header == nil {
 		input.Header = http.Header{}
 	}
 
-	logInternal("input")
-	logInternalPretty(input)
+	logInternal("input", PrettyString(input))
 
 	if input.Payload != nil {
-		switch input.Payload.ContentType {
-		case ApplicationJSON:
-			input.Header.Set(HeaderContentType, ApplicationJSON)
-			body, err = json.Marshal(input.Payload.Body)
-			if c.HandleError(err) {
-				return Return[RequestReponse[*T]]{
-					Message:    err.Error(),
-					Data:       nil,
-					Success:    false,
-					StatusCode: StatusBadRequest,
+		var body []byte
+		for name, value := range input.Header {
+			if name == HeaderContentType && len(value) > 0 {
+				switch value[0] {
+				case ApplicationJSON:
+					body, err = json.Marshal(input.Payload.Body)
+					if c.HandleError(err) {
+						return Return[RequestReponse[*T]]{
+							Message:    err.Error(),
+							Data:       nil,
+							Success:    false,
+							StatusCode: StatusBadRequest,
+						}
+					}
 				}
 			}
 		}
@@ -119,7 +121,7 @@ func Request[T any](input RequestInput, c *Context) Return[RequestReponse[*T]] {
 		}
 	}
 
-	logInternalPretty(parsedBody)
+	logInternal("parsedBody", PrettyString(parsedBody))
 
 	return Return[RequestReponse[*T]]{
 		Message: "success",

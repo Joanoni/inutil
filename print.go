@@ -36,13 +36,12 @@ func Clear() {
 	}
 }
 
-func LogDebugPretty(v any) error {
+func PrettyString(v any) string {
 	b, err := json.MarshalIndent(v, "", "  ")
 	if err != nil {
-		return err
+		return err.Error()
 	}
-	LogDebug(string(b))
-	return nil
+	return string(b)
 }
 
 func logTime() string {
@@ -89,15 +88,6 @@ func checkDebug() bool {
 		}
 	}
 	return false
-}
-
-func logInternalPretty(v any) error {
-	b, err := json.MarshalIndent(v, "", "  ")
-	if err != nil {
-		return err
-	}
-	logInternal(string(b))
-	return nil
 }
 
 func logInternal(values ...any) {

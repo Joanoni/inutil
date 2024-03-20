@@ -68,8 +68,11 @@ const (
 	Error_ContentTypeNotSet = "Content-Type header not set"
 
 	ApplicationJSON = "application/json"
+	TextEventStream = "text/event-stream"
+	NoCache         = "no-cache"
 
-	HeaderContentType = "Content-Type"
+	HeaderContentType  = "Content-Type"
+	HeaderCacheControl = "Cache-Control"
 
 	MethodGet     = "GET"
 	MethodHead    = "HEAD"

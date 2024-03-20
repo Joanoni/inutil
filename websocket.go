@@ -7,13 +7,36 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-type WebsocketManager struct {
-	Sessions map[string]WebsocketSessions
+type WebSocketManager struct {
+	connections map[string]*WebSocketConnection
 }
 
-type WebsocketSessions struct {
-	readChannel  chan any
-	writeChannel chan any
+type WebSocketConnection struct {
+	*websocket.Conn
+	Context *Context
+}
+
+type WebSocketHandlerInput struct {
+	NewConnection func(*WebSocketConnection)
+	ReadFunc      func(WebSocketReadMessage)
+}
+
+type WebSocketReadMessage struct {
+	Type    int
+	Data    []byte
+	Error   *error
+	Context *Context
+}
+
+type WebSocketSendInput struct {
+	Key  string
+	Type int
+	Data []byte
+}
+
+type WebSocketSetNewConnectionInput struct {
+	Key        string
+	Connection *WebSocketConnection
 }
 
 var upgrader = websocket.Upgrader{
@@ -21,32 +44,37 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func WebsocketHandler(c *Context) {
-	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-	if err != nil {
-		// panic(err)
-		log.Printf("%s, error while Upgrading websocket connection\n", err.Error())
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
-
-	for {
-		// Read message from client
-		messageType, p, err := conn.ReadMessage()
+func WebsocketHandler(input WebSocketHandlerInput) HandlerFunc {
+	return func(c *Context) {
+		conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 		if err != nil {
 			// panic(err)
-			log.Printf("%s, error while reading message\n", err.Error())
+			log.Printf("%s, error while Upgrading websocket connection\n", err.Error())
 			c.AbortWithError(http.StatusInternalServerError, err)
-			break
+			return
 		}
 
-		// Echo message back to client
-		err = conn.WriteMessage(messageType, p)
-		if err != nil {
-			// panic(err)
-			log.Printf("%s, error while writing message\n", err.Error())
-			c.AbortWithError(http.StatusInternalServerError, err)
-			break
-		}
+		go func() {
+			for {
+				// Read message from client
+				logInternal("Waiting new messages from the websocket")
+				messageType, data, err := conn.ReadMessage()
+				logInternal("New message arrived")
+				input.ReadFunc(WebSocketReadMessage{
+					Type:    messageType,
+					Data:    data,
+					Error:   &err,
+					Context: c,
+				})
+			}
+		}()
 	}
+}
+
+func (wsm *WebSocketManager) SetNewConnection(input WebSocketSetNewConnectionInput) {
+	wsm.connections[input.Key] = input.Connection
+}
+
+func (wsm *WebSocketManager) Send(input WebSocketSendInput) error {
+	return wsm.connections[input.Key].Conn.WriteMessage(input.Type, input.Data)
 }
