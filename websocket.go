@@ -65,6 +65,10 @@ func (swsi *StartWebSocketInput) startWebSocket() *WebSocketManager {
 	return wsm
 }
 
+func GetWebSocketManager() *WebSocketManager {
+	return inutil.WebSocketManager
+}
+
 func WebsocketHandler() HandlerFunc {
 	return func(c *Context) {
 		conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
