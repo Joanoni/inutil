@@ -8,7 +8,12 @@ import (
 )
 
 type WebsocketManager struct {
-	Sessions map[string]string
+	Sessions map[string]WebsocketSessions
+}
+
+type WebsocketSessions struct {
+	readChannel  chan any
+	writeChannel chan any
 }
 
 var upgrader = websocket.Upgrader{
