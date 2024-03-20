@@ -9,16 +9,20 @@ type Server struct {
 	engine *gin.Engine
 }
 
+type StartServerInput struct {
+	Port string
+}
+
 var server *Server
 
-func (ss *StartServerInput) start() *Server {
+func (ssi *StartServerInput) start() *Server {
 	server = &Server{}
 
-	if ss.Port == "" {
-		LogDebug("No port in address, using default :80")
+	if ssi.Port == "" {
+		Log("No port in address, using default :80")
 		server.port = ":80"
 	} else {
-		server.port = ss.Port
+		server.port = ssi.Port
 	}
 
 	server.engine = gin.New()
@@ -28,6 +32,10 @@ func (ss *StartServerInput) start() *Server {
 
 func (s *Server) Run() error {
 	logInternalF("Running server: %v", s.port)
+
+	if inutil.WebSocketManager != nil {
+		s.Get(inutil.WebSocketManager.path, WebsocketHandler())
+	}
 
 	return s.engine.Run(s.port)
 }

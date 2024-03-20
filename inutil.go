@@ -1,5 +1,7 @@
 package inutil
 
+import "log"
+
 type Return[V any] struct {
 	Message    string `json:"message"`
 	Data       *V     `json:"data"`
@@ -10,48 +12,33 @@ type Return[V any] struct {
 type StartInput struct {
 	Server     *StartServerInput
 	Log        *StartLogInput
+	WebSocket  *StartWebSocketInput
 	Enviroment string
 }
 
-type StartLogInput struct {
-	InternalLog     StartLogEnvInput
-	internalLogEnvs []string
-	DebugLog        StartLogEnvInput
-	debugEnvs       []string
-	TimeFormat      string
-}
-
-type StartLogEnvInput struct {
-	Development bool
-	Stage       bool
-	Production  bool
-}
-
-type StartServerInput struct {
-	Port string
-}
-
 type Inutil struct {
-	Server *Server
+	Server           *Server
+	WebSocketManager *WebSocketManager
 }
 
 var startModel *StartInput
 
+var inutil Inutil
+
+func init() {
+	log.Println("Initializing...")
+	startPrint()
+	startRequest()
+}
+
 func Start(start *StartInput) Inutil {
-	out := Inutil{}
+	inutil = Inutil{}
 
 	Clear()
 
 	startModel = start
 
-	if startModel.Log != nil {
-		setupDebug()
-		setupInternalLog()
-		if startModel.Log.TimeFormat == "" {
-			startModel.Log.TimeFormat = LogFormat
-			Log("No log time format specified, using default")
-		}
-	} else {
+	if startModel.Log == nil {
 		startModel.Log = &StartLogInput{
 			InternalLog: StartLogEnvInput{
 				Development: true,
@@ -65,47 +52,28 @@ func Start(start *StartInput) Inutil {
 			},
 			TimeFormat: LogFormat,
 		}
-		setupDebug()
-		setupInternalLog()
 		Log("No log specified, using default")
+	} else {
+		if startModel.Log.TimeFormat == "" {
+			startModel.Log.TimeFormat = LogFormat
+			Log("No log time format specified, using default")
+		}
 	}
 
-	Log("Initializing...")
-
-	startRequest()
+	setupDebug()
+	setupInternalLog()
 
 	if startModel.Server != nil {
-		logInternal("Starting server")
-		out.Server = startModel.Server.start()
+		logInternal("Starting Server")
+		inutil.Server = startModel.Server.start()
 	}
 
-	return out
-}
+	if startModel.WebSocket != nil {
+		logInternal("Starting WebSocketManager")
+		inutil.WebSocketManager = startModel.WebSocket.startWebSocket()
+	}
 
-func setupDebug() {
-	startModel.Log.debugEnvs = []string{}
-	if startModel.Log.DebugLog.Development {
-		startModel.Log.debugEnvs = append(startModel.Log.debugEnvs, Enviroment_Development)
-	}
-	if startModel.Log.DebugLog.Stage {
-		startModel.Log.debugEnvs = append(startModel.Log.debugEnvs, Enviroment_Stage)
-	}
-	if startModel.Log.DebugLog.Production {
-		startModel.Log.debugEnvs = append(startModel.Log.debugEnvs, Enviroment_Production)
-	}
-}
-
-func setupInternalLog() {
-	startModel.Log.internalLogEnvs = []string{}
-	if startModel.Log.InternalLog.Development {
-		startModel.Log.internalLogEnvs = append(startModel.Log.internalLogEnvs, Enviroment_Development)
-	}
-	if startModel.Log.InternalLog.Stage {
-		startModel.Log.internalLogEnvs = append(startModel.Log.internalLogEnvs, Enviroment_Stage)
-	}
-	if startModel.Log.InternalLog.Production {
-		startModel.Log.internalLogEnvs = append(startModel.Log.internalLogEnvs, Enviroment_Production)
-	}
+	return inutil
 }
 
 func JSON[T any](payload Return[T], c *Context) {

@@ -7,18 +7,24 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+type StartWebSocketInput struct {
+	ReadBufferSize  int
+	WriteBufferSize int
+	Path            string
+	NewConnection   func(*WebSocketConnection)
+	ReadFunc        func(WebSocketReadMessage)
+}
+
 type WebSocketManager struct {
-	connections map[string]*WebSocketConnection
+	path          string
+	connections   map[string]*WebSocketConnection
+	newConnection func(*WebSocketConnection)
+	readFunc      func(WebSocketReadMessage)
 }
 
 type WebSocketConnection struct {
 	*websocket.Conn
 	Context *Context
-}
-
-type WebSocketHandlerInput struct {
-	NewConnection func(*WebSocketConnection)
-	ReadFunc      func(WebSocketReadMessage)
 }
 
 type WebSocketReadMessage struct {
@@ -39,12 +45,27 @@ type WebSocketSetNewConnectionInput struct {
 	Connection *WebSocketConnection
 }
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
+var upgrader websocket.Upgrader
+
+func (swsi *StartWebSocketInput) startWebSocket() *WebSocketManager {
+	upgrader = websocket.Upgrader{
+		ReadBufferSize:  swsi.ReadBufferSize,
+		WriteBufferSize: swsi.WriteBufferSize,
+	}
+	if swsi.Path == "" {
+		Log("No websocket path, using default /ws")
+		swsi.Path = "/ws"
+	}
+	wsm := &WebSocketManager{
+		connections:   map[string]*WebSocketConnection{},
+		path:          swsi.Path,
+		newConnection: swsi.NewConnection,
+		readFunc:      swsi.ReadFunc,
+	}
+	return wsm
 }
 
-func WebsocketHandler(input WebSocketHandlerInput) HandlerFunc {
+func WebsocketHandler() HandlerFunc {
 	return func(c *Context) {
 		conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 		if err != nil {
@@ -59,13 +80,20 @@ func WebsocketHandler(input WebSocketHandlerInput) HandlerFunc {
 				// Read message from client
 				logInternal("Waiting new messages from the websocket")
 				messageType, data, err := conn.ReadMessage()
-				logInternal("New message arrived")
-				input.ReadFunc(WebSocketReadMessage{
-					Type:    messageType,
-					Data:    data,
-					Error:   &err,
-					Context: c,
-				})
+				logInternalF("New message arrived type:%v data:%v", messageType, string(data))
+				if messageType == 12371823 {
+					inutil.WebSocketManager.newConnection(&WebSocketConnection{
+						Conn:    conn,
+						Context: c,
+					})
+				} else {
+					inutil.WebSocketManager.readFunc(WebSocketReadMessage{
+						Type:    messageType,
+						Data:    data,
+						Error:   &err,
+						Context: c,
+					})
+				}
 			}
 		}()
 	}
