@@ -106,3 +106,8 @@ func (wsm *WebSocketManager) SetNewConnection(input WebSocketSetNewConnectionInp
 func (wsm *WebSocketManager) Send(input WebSocketSendInput) error {
 	return wsm.connections[input.Key].Conn.WriteMessage(input.Type, input.Data)
 }
+
+const (
+	DefaultReadBufferSize  = 1024
+	DefaultWriteBufferSize = 1024
+)
