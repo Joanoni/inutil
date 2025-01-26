@@ -53,7 +53,7 @@ func startPrint() {
 	}
 }
 
-func setupDebug() {
+func setupLogger() {
 	inutil.Logger.debugEnvs = []string{}
 	if inutil.Logger.DebugLog.Development {
 		inutil.Logger.debugEnvs = append(inutil.Logger.debugEnvs, Enviroment_Development)

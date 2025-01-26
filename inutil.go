@@ -60,7 +60,12 @@ func Start(start *StartInput) Inutil {
 		}
 	}
 
-	setupDebug()
+	inutil.Logger = &Logger{
+		InternalLog: start.Log.InternalLog,
+		DebugLog:    start.Log.DebugLog,
+		TimeFormat:  start.Log.TimeFormat,
+	}
+	setupLogger()
 	setupInternalLog()
 
 	if start.Server != nil {
