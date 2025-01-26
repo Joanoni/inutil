@@ -3,7 +3,6 @@ package inutil
 import (
 	"bytes"
 	"encoding/json"
-	"io"
 	"net/http"
 	"strings"
 )
@@ -46,8 +45,7 @@ func Request[T any](input RequestInput, c *Context) (output ReturnStruct[T], out
 				case ApplicationJSON:
 					body, err = json.Marshal(input.Payload.Body)
 					if HandleError(err) {
-						output = ReturnEmpty[T]()
-						outerr = ReturnInternalServerError(Errs{err.Error()})
+						outerr = ReturnInternalServerError(ErrsFromError(err))
 						return
 					}
 				}
@@ -55,15 +53,13 @@ func Request[T any](input RequestInput, c *Context) (output ReturnStruct[T], out
 		}
 		req, err = http.NewRequest(strings.ToUpper(input.Method), input.Url, bytes.NewReader(body))
 		if HandleError(err) {
-			output = ReturnEmpty[T]()
-			outerr = ReturnInternalServerError(Errs{err.Error()})
+			outerr = ReturnInternalServerError(ErrsFromError(err))
 			return
 		}
 	} else {
 		req, err = http.NewRequest(strings.ToUpper(input.Method), input.Url, nil)
 		if HandleError(err) {
-			output = ReturnEmpty[T]()
-			outerr = ReturnInternalServerError(Errs{err.Error()})
+			outerr = ReturnInternalServerError(ErrsFromError(err))
 			return
 		}
 	}
@@ -71,29 +67,16 @@ func Request[T any](input RequestInput, c *Context) (output ReturnStruct[T], out
 	resp, err := client.Do(req)
 	if HandleError(err) {
 		output = ReturnEmpty[T]()
-		outerr = ReturnInternalServerError(Errs{err.Error()})
+		outerr = ReturnInternalServerError(ErrsFromError(err))
 		return
 	}
 	var parsedBody T
-	// outerr := parseBody(resp.Body, resp.Header[HeaderContentType], &parsedBody)
-	var bodyBytes []byte
-	bodyBytes, err = io.ReadAll(resp.Body)
-	if HandleError(err) {
-		output = ReturnEmpty[T]()
-		outerr = ReturnInternalServerError(Errs{err.Error()})
+	outerr = parseBody(resp.Body, resp.Header[HeaderContentType], &parsedBody)
+	if outerr.HasError() {
 		return
 	}
-	logInternal("Request: string(bodyBytes)", string(bodyBytes))
-	if len(bodyBytes) > 0 {
-		err = json.Unmarshal(bodyBytes, &parsedBody)
-		if HandleError(err) {
-			output = ReturnEmpty[T]()
-			outerr = ReturnInternalServerError(Errs{err.Error()})
-			return
-		}
-	}
 	logInternal("parsedBody", PrettyString(parsedBody))
-	output = ReturnOk[T](parsedBody)
-	outerr = ReturnInternalServerError(Errs{err.Error()})
+	output = ReturnOk(parsedBody)
+	outerr = ReturnInternalServerError(ErrsFromError(err))
 	return
 }

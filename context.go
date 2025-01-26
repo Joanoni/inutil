@@ -2,8 +2,7 @@ package inutil
 
 import (
 	"encoding/json"
-	"errors"
-	"strings"
+	"io"
 
 	"github.com/gin-gonic/gin"
 )
@@ -34,20 +33,24 @@ func (c *Context) JSON(output Caio) {
 	c.gc.JSON(output.GetStatusCode(), output.GetData())
 }
 
-func (c *Context) Body(output any) error {
-	ct := c.Request.Header.Get("Content-Type")
-	if ct != "" {
-		mediaType := strings.ToLower(strings.TrimSpace(strings.Split(ct, ";")[0]))
-		switch mediaType {
+func (c *Context) Body(output any) (outerr ReturnStructError) {
+	defer PrintInternalFunction()()
+	return parseBody(c.Request.Body, c.Request.Header[HeaderContentType], output)
+}
+func parseBody(input io.ReadCloser, contentType []string, output any) (outerr ReturnStructError) {
+	if len(contentType) > 0 {
+		switch contentType[0] {
 		case ApplicationJSON:
-			dec := json.NewDecoder(c.Request.Body)
+			dec := json.NewDecoder(input)
 			err := dec.Decode(output)
-			return err
+			outerr = ReturnInternalServerError(ErrsFromError(err))
+			return
 		default:
-			return errors.New(Error_ContentTypeNotSet)
+			outerr = ReturnInternalServerError(ErrsContentTypeNotSet)
+			return
 		}
 	} else {
-		return errors.New(Error_ContentTypeNotSet)
+		outerr = ReturnInternalServerError(ErrsContentTypeNotSet)
+		return
 	}
-	return nil
 }

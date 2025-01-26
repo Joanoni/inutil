@@ -19,3 +19,11 @@ func HandleErrs(err *Errs) bool {
 	}
 	return false
 }
+
+func ErrsFromError(err error) Errs {
+	return Errs{Message: err.Error()}
+}
+
+var (
+	ErrsContentTypeNotSet = Errs{Message: "Content-Type header not set"}
+)
