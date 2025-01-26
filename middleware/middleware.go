@@ -1,4 +1,4 @@
-package inutil
+package middleware
 
 import (
 	"github.com/gin-gonic/gin"
@@ -14,7 +14,7 @@ func MiddlewareRecovery() HandlerFunc {
 		defer func() {
 			if r := recover(); r != nil {
 				logInternalF("middlewareRecover: %v", r)
-				c.JSON(ReturnInternalServerError("error: %v", r))
+				c.JSON(ReturnInternalServerError(NewError(r)))
 			}
 		}()
 

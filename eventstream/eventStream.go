@@ -1,4 +1,4 @@
-package inutil
+package eventstream
 
 type EventStreamHandlerInput struct {
 	WriteChannel *chan EventStreamMessage

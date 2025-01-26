@@ -1,79 +1,33 @@
-package inutil
+package global
 
-import (
-	"github.com/gin-gonic/gin"
-)
-
-type Server struct {
-	port   string
-	engine *gin.Engine
-}
-
-type StartServerInput struct {
-	Port string
-}
-
-var server *Server
-
-func (ssi *StartServerInput) start() *Server {
-	server = &Server{}
-
-	if ssi.Port == "" {
-		Print("No port in address, using default :80")
-		server.port = ":80"
-	} else {
-		server.port = ssi.Port
-	}
-
-	server.engine = gin.New()
-
-	return server
-}
-
-func (s *Server) Run() error {
-	logInternalF("Running server: %v", s.port)
-
-	if inutil.WebSocketManager != nil {
-		s.Get(inutil.WebSocketManager.path, WebsocketHandler())
-	}
-
-	return s.engine.Run(s.port)
-}
-
-func (s *Server) Use(handlers ...HandlerFunc) {
-	s.engine.Use(wrapperHandlersToGin(handlers...)...)
-}
-
-func (s *Server) Get(path string, handlers ...HandlerFunc) {
-	s.engine.GET(path, wrapperHandlersToGin(handlers...)...)
-}
-
-func (s *Server) Head(path string, handlers ...HandlerFunc) {
-	s.engine.HEAD(path, wrapperHandlersToGin(handlers...)...)
-}
-
-func (s *Server) Post(path string, handlers ...HandlerFunc) {
-	s.engine.POST(path, wrapperHandlersToGin(handlers...)...)
-}
-
-func (s *Server) Put(path string, handlers ...HandlerFunc) {
-	s.engine.PUT(path, wrapperHandlersToGin(handlers...)...)
-}
-
-func (s *Server) Patch(path string, handlers ...HandlerFunc) {
-	s.engine.PATCH(path, wrapperHandlersToGin(handlers...)...)
-}
-
-func (s *Server) Delete(path string, handlers ...HandlerFunc) {
-	s.engine.DELETE(path, wrapperHandlersToGin(handlers...)...)
-}
-
-func (s *Server) Options(path string, handlers ...HandlerFunc) {
-	s.engine.OPTIONS(path, wrapperHandlersToGin(handlers...)...)
-}
+var inutil model.Inutil
 
 const (
-	Error_ContentTypeNotSet = "Content-Type header not set"
+	Enviroment_Development = "development"
+	Enviroment_Stage       = "stage"
+	Enviroment_Production  = "production"
+
+	Layout      = "01/02 03:04:05PM '06 -0700" // The reference time, in numerical order.
+	ANSIC       = "Mon Jan _2 15:04:05 2006"
+	UnixDate    = "Mon Jan _2 15:04:05 MST 2006"
+	RubyDate    = "Mon Jan 02 15:04:05 -0700 2006"
+	RFC822      = "02 Jan 06 15:04 MST"
+	RFC822Z     = "02 Jan 06 15:04 -0700" // RFC822 with numeric zone
+	RFC850      = "Monday, 02-Jan-06 15:04:05 MST"
+	RFC1123     = "Mon, 02 Jan 2006 15:04:05 MST"
+	RFC1123Z    = "Mon, 02 Jan 2006 15:04:05 -0700" // RFC1123 with numeric zone
+	RFC3339     = "2006-01-02T15:04:05Z07:00"
+	RFC3339Nano = "2006-01-02T15:04:05.999999999Z07:00"
+	Kitchen     = "3:04PM"
+	// Handy time stamps.
+	Stamp      = "Jan _2 15:04:05"
+	StampMilli = "Jan _2 15:04:05.000"
+	StampMicro = "Jan _2 15:04:05.000000"
+	StampNano  = "Jan _2 15:04:05.000000000"
+	DateTime   = "2006-01-02 15:04:05"
+	DateOnly   = "2006-01-02"
+	TimeOnly   = "15:04:05"
+	LogFormat  = "2006-01-02 15:04:05.000"
 
 	ApplicationJSON = "application/json"
 	TextEventStream = "text/event-stream"

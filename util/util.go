@@ -1,6 +1,8 @@
-package inutil
+package util
 
-import "runtime"
+import (
+	"runtime"
+)
 
 func CallerName(skip int) string {
 	pc, _, _, ok := runtime.Caller(skip)

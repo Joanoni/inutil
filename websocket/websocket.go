@@ -1,53 +1,16 @@
-package inutil
+package websocket
 
 import (
 	"log"
 	"net/http"
 
+	"github.com/Joanoni/inutil"
 	"github.com/gorilla/websocket"
 )
 
-type StartWebSocketInput struct {
-	ReadBufferSize  int
-	WriteBufferSize int
-	Path            string
-	NewConnection   func(*WebSocketConnection)
-	ReadFunc        func(WebSocketReadMessage)
-}
-
-type WebSocketManager struct {
-	path          string
-	connections   map[string]*WebSocketConnection
-	newConnection func(*WebSocketConnection)
-	readFunc      func(WebSocketReadMessage)
-}
-
-type WebSocketConnection struct {
-	*websocket.Conn
-	Context *Context
-}
-
-type WebSocketReadMessage struct {
-	Type    int
-	Data    []byte
-	Error   *error
-	Context *Context
-}
-
-type WebSocketSendInput struct {
-	Key  string
-	Type int
-	Data []byte
-}
-
-type WebSocketSetNewConnectionInput struct {
-	Key        string
-	Connection *WebSocketConnection
-}
-
 var upgrader websocket.Upgrader
 
-func (swsi *StartWebSocketInput) startWebSocket() *WebSocketManager {
+func (swsi *model.StartWebSocketInput) startWebSocket() *model.WebSocketManager {
 	upgrader = websocket.Upgrader{
 		ReadBufferSize:  swsi.ReadBufferSize,
 		WriteBufferSize: swsi.WriteBufferSize,
@@ -56,8 +19,8 @@ func (swsi *StartWebSocketInput) startWebSocket() *WebSocketManager {
 		Print("No websocket path, using default /ws")
 		swsi.Path = "/ws"
 	}
-	wsm := &WebSocketManager{
-		connections:   map[string]*WebSocketConnection{},
+	wsm := &model.WebSocketManager{
+		connections:   map[string]*model.WebSocketConnection{},
 		path:          swsi.Path,
 		newConnection: swsi.NewConnection,
 		readFunc:      swsi.ReadFunc,
@@ -65,7 +28,7 @@ func (swsi *StartWebSocketInput) startWebSocket() *WebSocketManager {
 	return wsm
 }
 
-func GetWebSocketManager() *WebSocketManager {
+func GetWebSocketManager() *model.WebSocketManager {
 	return inutil.WebSocketManager
 }
 
