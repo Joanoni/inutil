@@ -51,7 +51,9 @@ func parseBody(input io.ReadCloser, contentType []string, output any) (outerr Re
 			Print("4")
 			err := dec.Decode(output)
 			Print("5")
-			outerr = ReturnInternalServerError(ErrsFromError(err))
+			if HandleError(err) {
+				outerr = ReturnInternalServerError(ErrsFromError(err))
+			}
 			Print("6")
 			return
 		default:
