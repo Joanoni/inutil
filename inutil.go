@@ -18,10 +18,10 @@ type StartInput struct {
 
 type Inutil struct {
 	Server           *Server
+	Logger           *Logger
 	WebSocketManager *WebSocketManager
+	Enviroment       string
 }
-
-var startModel *StartInput
 
 var inutil Inutil
 
@@ -32,14 +32,14 @@ func init() {
 }
 
 func Start(start *StartInput) Inutil {
-	inutil = Inutil{}
+	inutil = Inutil{
+		Enviroment: start.Enviroment,
+	}
 
 	Clear()
 
-	startModel = start
-
-	if startModel.Log == nil {
-		startModel.Log = &StartLogInput{
+	if start.Log == nil {
+		start.Log = &StartLogInput{
 			InternalLog: StartLogEnvInput{
 				Development: true,
 				Stage:       false,
@@ -54,8 +54,8 @@ func Start(start *StartInput) Inutil {
 		}
 		Log("No log specified, using default")
 	} else {
-		if startModel.Log.TimeFormat == "" {
-			startModel.Log.TimeFormat = LogFormat
+		if start.Log.TimeFormat == "" {
+			start.Log.TimeFormat = LogFormat
 			Log("No log time format specified, using default")
 		}
 	}
@@ -63,14 +63,14 @@ func Start(start *StartInput) Inutil {
 	setupDebug()
 	setupInternalLog()
 
-	if startModel.Server != nil {
+	if start.Server != nil {
 		logInternal("Starting Server")
-		inutil.Server = startModel.Server.start()
+		inutil.Server = start.Server.start()
 	}
 
-	if startModel.WebSocket != nil {
+	if start.WebSocket != nil {
 		logInternal("Starting WebSocketManager")
-		inutil.WebSocketManager = startModel.WebSocket.startWebSocket()
+		inutil.WebSocketManager = start.WebSocket.startWebSocket()
 	}
 
 	return inutil

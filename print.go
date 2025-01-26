@@ -12,6 +12,18 @@ import (
 )
 
 type StartLogInput struct {
+	InternalLog StartLogEnvInput
+	DebugLog    StartLogEnvInput
+	TimeFormat  string
+}
+
+type StartLogEnvInput struct {
+	Development bool
+	Stage       bool
+	Production  bool
+}
+
+type Logger struct {
 	InternalLog     StartLogEnvInput
 	internalLogEnvs []string
 	DebugLog        StartLogEnvInput
@@ -19,7 +31,7 @@ type StartLogInput struct {
 	TimeFormat      string
 }
 
-type StartLogEnvInput struct {
+type LogEnv struct {
 	Development bool
 	Stage       bool
 	Production  bool
@@ -39,31 +51,31 @@ func startPrint() {
 		cmd.Stdout = os.Stdout
 		cmd.Run()
 	}
-	startModel.Log.debugEnvs = []string{}
-	startModel.Log.internalLogEnvs = []string{}
 }
 
 func setupDebug() {
-	if startModel.Log.DebugLog.Development {
-		startModel.Log.debugEnvs = append(startModel.Log.debugEnvs, Enviroment_Development)
+	inutil.Logger.debugEnvs = []string{}
+	if inutil.Logger.DebugLog.Development {
+		inutil.Logger.debugEnvs = append(inutil.Logger.debugEnvs, Enviroment_Development)
 	}
-	if startModel.Log.DebugLog.Stage {
-		startModel.Log.debugEnvs = append(startModel.Log.debugEnvs, Enviroment_Stage)
+	if inutil.Logger.DebugLog.Stage {
+		inutil.Logger.debugEnvs = append(inutil.Logger.debugEnvs, Enviroment_Stage)
 	}
-	if startModel.Log.DebugLog.Production {
-		startModel.Log.debugEnvs = append(startModel.Log.debugEnvs, Enviroment_Production)
+	if inutil.Logger.DebugLog.Production {
+		inutil.Logger.debugEnvs = append(inutil.Logger.debugEnvs, Enviroment_Production)
 	}
 }
 
 func setupInternalLog() {
-	if startModel.Log.InternalLog.Development {
-		startModel.Log.internalLogEnvs = append(startModel.Log.internalLogEnvs, Enviroment_Development)
+	inutil.Logger.internalLogEnvs = []string{}
+	if inutil.Logger.InternalLog.Development {
+		inutil.Logger.internalLogEnvs = append(inutil.Logger.internalLogEnvs, Enviroment_Development)
 	}
-	if startModel.Log.InternalLog.Stage {
-		startModel.Log.internalLogEnvs = append(startModel.Log.internalLogEnvs, Enviroment_Stage)
+	if inutil.Logger.InternalLog.Stage {
+		inutil.Logger.internalLogEnvs = append(inutil.Logger.internalLogEnvs, Enviroment_Stage)
 	}
-	if startModel.Log.InternalLog.Production {
-		startModel.Log.internalLogEnvs = append(startModel.Log.internalLogEnvs, Enviroment_Production)
+	if inutil.Logger.InternalLog.Production {
+		inutil.Logger.internalLogEnvs = append(inutil.Logger.internalLogEnvs, Enviroment_Production)
 	}
 }
 
@@ -85,7 +97,7 @@ func PrettyString(v any) string {
 }
 
 func logTime() string {
-	return time.Now().Format(startModel.Log.TimeFormat)
+	return time.Now().Format(inutil.Logger.TimeFormat)
 }
 
 func Log(values ...any) {
@@ -122,8 +134,8 @@ func LogDebugF(format string, values ...any) {
 }
 
 func checkDebug() bool {
-	for _, env := range startModel.Log.debugEnvs {
-		if env == startModel.Enviroment {
+	for _, env := range inutil.Logger.debugEnvs {
+		if env == inutil.Enviroment {
 			return true
 		}
 	}
@@ -143,8 +155,8 @@ func logInternalF(format string, values ...any) {
 }
 
 func checkLogInternal() bool {
-	for _, env := range startModel.Log.internalLogEnvs {
-		if env == startModel.Enviroment {
+	for _, env := range inutil.Logger.internalLogEnvs {
+		if env == inutil.Enviroment {
 			return true
 		}
 	}
