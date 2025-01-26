@@ -168,11 +168,16 @@ func SprintF(format string, values ...any) string {
 }
 
 func Print(values ...any) {
+	values = append(values, "\n")
 	fmt.Print(values...)
 }
 
+func PrintF(format string, values ...any) {
+	fmt.Printf(format+"\n", values...)
+}
+
 func PrintError(err error) {
-	PrintErrorF("%v", err)
+	PrintErrorF("%v\n", err)
 }
 
 func PrintErrorF(format string, err error, values ...any) {
@@ -202,8 +207,4 @@ func PrintInternalFunction() func(string) {
 			PrintF("INTERNAL END: %v", funcName)
 		}
 	}
-}
-
-func PrintF(format string, values ...any) {
-	fmt.Printf(format, values...)
 }
