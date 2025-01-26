@@ -10,12 +10,8 @@ import (
 type RequestInput struct {
 	Method  string
 	Url     string
-	Payload *RequestPayloadInput
+	Payload any
 	Header  http.Header
-}
-
-type RequestPayloadInput struct {
-	Body any
 }
 
 type RequestReponse[T any] struct {
@@ -43,7 +39,7 @@ func Request[T any](input RequestInput, c *Context) (output ReturnStruct[T], out
 			if name == HeaderContentType && len(value) > 0 {
 				switch value[0] {
 				case ApplicationJSON:
-					body, err = json.Marshal(input.Payload.Body)
+					body, err = json.Marshal(input.Payload)
 					if HandleError(err) {
 						outerr = ReturnInternalServerError(ErrsFromError(err))
 						return
