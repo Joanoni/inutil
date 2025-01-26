@@ -164,7 +164,7 @@ func LogDebugF(format string, values ...any) {
 }
 
 func SprintF(format string, values ...any) string {
-	return fmt.Sprintf(format, values)
+	return fmt.Sprintf(format, values...)
 }
 
 func Print(values ...any) {
