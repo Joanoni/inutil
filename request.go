@@ -25,7 +25,7 @@ func startRequest() {
 	client = &http.Client{}
 }
 
-func Request[T any](input RequestInput, c *Context) (output ReturnStruct[T], outerr ReturnStructError) {
+func Request[T any](c *Context, input RequestInput) (output ReturnStruct[T], outerr ReturnStructError) {
 	defer PrintInternalFunction()()
 	var err error
 	var req *http.Request
