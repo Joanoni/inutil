@@ -2,12 +2,12 @@ package inutil
 
 import "log"
 
-type Return[V any] struct {
-	Message    string `json:"message"`
-	Data       *V     `json:"data"`
-	Success    bool   `json:"success"`
-	StatusCode int    `json:"-"`
-}
+// type Return[V any] struct {
+// 	Message    string `json:"message"`
+// 	Data       *V     `json:"data"`
+// 	Success    bool   `json:"success"`
+// 	StatusCode int    `json:"-"`
+// }
 
 type StartInput struct {
 	Server     *StartServerInput
@@ -45,32 +45,35 @@ func Start(start *StartInput) Inutil {
 				Stage:       false,
 				Production:  false,
 			},
-			DebugLog: StartLogEnvInput{
+			PrintLog: StartLogEnvInput{
 				Development: true,
 				Stage:       true,
 				Production:  false,
 			},
 			TimeFormat: LogFormat,
 		}
-		Log("No log specified, using default")
+		Print("No log specified, using default")
 	} else {
 		if start.Log.TimeFormat == "" {
 			start.Log.TimeFormat = LogFormat
-			Log("No log time format specified, using default")
+			Print("No log time format specified, using default")
 		}
 	}
 
 	inutil.Logger = &Logger{
-		InternalLog: start.Log.InternalLog,
-		DebugLog:    start.Log.DebugLog,
-		TimeFormat:  start.Log.TimeFormat,
+		InternalPrint:         start.Log.InternalLog,
+		DebugPrint:            start.Log.PrintLog,
+		FunctionPrint:         start.Log.FunctionLog,
+		InternalFunctionPrint: start.Log.InternalFunctionPrint,
+		TimeFormat:            start.Log.TimeFormat,
 	}
-	setupLogger()
-	setupInternalLog()
+	// setupPrint()
+	// setupInternalPrint()
 
 	if start.Server != nil {
 		logInternal("Starting Server")
 		inutil.Server = start.Server.start()
+		inutil.Server.Use(MiddlewareRecovery())
 	}
 
 	if start.WebSocket != nil {
@@ -79,10 +82,6 @@ func Start(start *StartInput) Inutil {
 	}
 
 	return inutil
-}
-
-func JSON[T any](payload Return[T], c *Context) {
-	c.gc.JSON(payload.StatusCode, payload)
 }
 
 const (

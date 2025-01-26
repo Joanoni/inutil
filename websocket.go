@@ -53,7 +53,7 @@ func (swsi *StartWebSocketInput) startWebSocket() *WebSocketManager {
 		WriteBufferSize: swsi.WriteBufferSize,
 	}
 	if swsi.Path == "" {
-		Log("No websocket path, using default /ws")
+		Print("No websocket path, using default /ws")
 		swsi.Path = "/ws"
 	}
 	wsm := &WebSocketManager{

@@ -19,7 +19,7 @@ func (ssi *StartServerInput) start() *Server {
 	server = &Server{}
 
 	if ssi.Port == "" {
-		Log("No port in address, using default :80")
+		Print("No port in address, using default :80")
 		server.port = ":80"
 	} else {
 		server.port = ssi.Port
@@ -97,7 +97,7 @@ const (
 	StatusProcessing         = 102 // RFC 2518, 10.1
 	StatusEarlyHints         = 103 // RFC 8297
 
-	StatusOK                   = 200 // RFC 9110, 15.3.1
+	StatusOk                   = 200 // RFC 9110, 15.3.1
 	StatusCreated              = 201 // RFC 9110, 15.3.2
 	StatusAccepted             = 202 // RFC 9110, 15.3.3
 	StatusNonAuthoritativeInfo = 203 // RFC 9110, 15.3.4

@@ -8,6 +8,21 @@ func MiddlewareLog() HandlerFunc {
 	return HandlerFunc(wrapperHandlerFromGin(gin.Logger()))
 }
 
+func MiddlewareRecovery() HandlerFunc {
+	return HandlerFunc(func(c *Context) {
+
+		defer func() {
+			if r := recover(); r != nil {
+				logInternalF("middlewareRecover: %v", r)
+				c.JSON(ReturnInternalServerError("error: %v", r))
+			}
+		}()
+
+		c.Next()
+
+	})
+}
+
 func MiddlewareCors() HandlerFunc {
 	return HandlerFunc(func(c *Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")

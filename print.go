@@ -12,9 +12,11 @@ import (
 )
 
 type StartLogInput struct {
-	InternalLog StartLogEnvInput
-	DebugLog    StartLogEnvInput
-	TimeFormat  string
+	InternalLog           StartLogEnvInput
+	PrintLog              StartLogEnvInput
+	FunctionLog           StartLogEnvInput
+	InternalFunctionPrint StartLogEnvInput
+	TimeFormat            string
 }
 
 type StartLogEnvInput struct {
@@ -24,11 +26,11 @@ type StartLogEnvInput struct {
 }
 
 type Logger struct {
-	InternalLog     StartLogEnvInput
-	internalLogEnvs []string
-	DebugLog        StartLogEnvInput
-	debugEnvs       []string
-	TimeFormat      string
+	InternalPrint         StartLogEnvInput
+	DebugPrint            StartLogEnvInput
+	FunctionPrint         StartLogEnvInput
+	InternalFunctionPrint StartLogEnvInput
+	TimeFormat            string
 }
 
 type LogEnv struct {
@@ -53,32 +55,6 @@ func startPrint() {
 	}
 }
 
-func setupLogger() {
-	inutil.Logger.debugEnvs = []string{}
-	if inutil.Logger.DebugLog.Development {
-		inutil.Logger.debugEnvs = append(inutil.Logger.debugEnvs, Enviroment_Development)
-	}
-	if inutil.Logger.DebugLog.Stage {
-		inutil.Logger.debugEnvs = append(inutil.Logger.debugEnvs, Enviroment_Stage)
-	}
-	if inutil.Logger.DebugLog.Production {
-		inutil.Logger.debugEnvs = append(inutil.Logger.debugEnvs, Enviroment_Production)
-	}
-}
-
-func setupInternalLog() {
-	inutil.Logger.internalLogEnvs = []string{}
-	if inutil.Logger.InternalLog.Development {
-		inutil.Logger.internalLogEnvs = append(inutil.Logger.internalLogEnvs, Enviroment_Development)
-	}
-	if inutil.Logger.InternalLog.Stage {
-		inutil.Logger.internalLogEnvs = append(inutil.Logger.internalLogEnvs, Enviroment_Stage)
-	}
-	if inutil.Logger.InternalLog.Production {
-		inutil.Logger.internalLogEnvs = append(inutil.Logger.internalLogEnvs, Enviroment_Production)
-	}
-}
-
 func Clear() {
 	value, ok := clear[runtime.GOOS] //runtime.GOOS -> linux, windows, darwin etc.
 	if ok {                          //if we defined a clear func for that platform:
@@ -100,65 +76,134 @@ func logTime() string {
 	return time.Now().Format(inutil.Logger.TimeFormat)
 }
 
-func Log(values ...any) {
-	format := ""
-	for i := 0; i < len(values); i++ {
-		format += "%v"
-	}
-	LogF(format, values...)
-}
-
-func LogF(format string, values ...any) {
-	fmt.Printf(logTime()+" "+format+"\n", values...)
-}
-
-func LogError(err error) {
-	LogErrorF("%v", err)
-}
-
-func LogErrorF(format string, err error, values ...any) {
-	values = append([]any{err.Error()}, values...)
-	color.Red(logTime()+" "+format, values...)
-}
-
-func LogDebug(values ...any) {
-	if checkDebug() {
-		Log(values...)
-	}
-}
-
-func LogDebugF(format string, values ...any) {
-	if checkDebug() {
-		LogF(format, values...)
-	}
-}
-
-func checkDebug() bool {
-	for _, env := range inutil.Logger.debugEnvs {
-		if env == inutil.Enviroment {
+func checkDebugPrint() bool {
+	switch inutil.Enviroment {
+	case Enviroment_Development:
+		if inutil.Logger.DebugPrint.Development {
 			return true
 		}
+		return false
+	case Enviroment_Stage:
+		if inutil.Logger.DebugPrint.Stage {
+			return true
+		}
+		return false
+	case Enviroment_Production:
+		if inutil.Logger.DebugPrint.Production {
+			return true
+		}
+		return false
+	}
+	return false
+}
+
+func checkInternalPrint() bool {
+	switch inutil.Enviroment {
+	case Enviroment_Development:
+		if inutil.Logger.InternalPrint.Development {
+			return true
+		}
+		return false
+	case Enviroment_Stage:
+		if inutil.Logger.InternalPrint.Stage {
+			return true
+		}
+		return false
+	case Enviroment_Production:
+		if inutil.Logger.InternalPrint.Production {
+			return true
+		}
+		return false
+	}
+	return false
+}
+
+func checkFunctionPrint() bool {
+	switch inutil.Enviroment {
+	case Enviroment_Development:
+		if inutil.Logger.InternalPrint.Development {
+			return true
+		}
+		return false
+	case Enviroment_Stage:
+		if inutil.Logger.InternalPrint.Stage {
+			return true
+		}
+		return false
+	case Enviroment_Production:
+		if inutil.Logger.InternalPrint.Production {
+			return true
+		}
+		return false
 	}
 	return false
 }
 
 func logInternal(values ...any) {
-	if checkLogInternal() {
-		Log(values...)
+	if checkInternalPrint() {
+		Print(values...)
 	}
 }
 
 func logInternalF(format string, values ...any) {
-	if checkLogInternal() {
-		LogF(format, values...)
+	if checkInternalPrint() {
+		PrintF(format, values...)
 	}
 }
 
-func checkLogInternal() bool {
-	for _, env := range inutil.Logger.internalLogEnvs {
-		if env == inutil.Enviroment {
-			return true
+func LogDebug(values ...any) {
+	if checkDebugPrint() {
+		Print(values...)
+	}
+}
+
+func LogDebugF(format string, values ...any) {
+	if checkDebugPrint() {
+		PrintF(format, values...)
+	}
+}
+
+func SprintF(format string, values ...any) string {
+	return fmt.Sprintf(format, values)
+}
+
+func Print(values ...any) {
+	fmt.Print(values...)
+}
+
+func PrintError(err error) {
+	PrintErrorF("%v", err)
+}
+
+func PrintErrorF(format string, err error, values ...any) {
+	values = append([]any{err.Error()}, values...)
+	color.Red(logTime()+" "+format, values...)
+}
+
+func PrintFunction() func(string) {
+	funcName := CallerName(2)
+	if checkFunctionPrint() {
+		PrintF("START: %v", funcName)
+	}
+	return func(funcName string) {
+		if checkFunctionPrint() {
+			PrintF("END: %v", funcName)
 		}
 	}
-	return false
+}
+
+func PrintInternalFunction() func(string) {
+	funcName := CallerName(2)
+	if checkFunctionPrint() {
+		PrintF("INTERNAL START: %v", funcName)
+	}
+	return func(funcName string) {
+		if checkFunctionPrint() {
+			PrintF("INTERNAL END: %v", funcName)
+		}
+	}
+}
+
+func PrintF(format string, values ...any) {
+	fmt.Printf(format, values...)
 }
