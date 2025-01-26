@@ -38,6 +38,8 @@ func (c *Context) Body(output any) (outerr ReturnStructError) {
 	return parseBody(c.Request.Body, c.Request.Header[HeaderContentType], output)
 }
 func parseBody(input io.ReadCloser, contentType []string, output any) (outerr ReturnStructError) {
+	defer PrintInternalFunction()()
+
 	if len(contentType) > 0 {
 		switch contentType[0] {
 		case ApplicationJSON:
