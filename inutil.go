@@ -1,6 +1,10 @@
 package inutil
 
-import "log"
+import (
+	"encoding/json"
+	"log"
+	"os"
+)
 
 // type Return[V any] struct {
 // 	Message    string `json:"message"`
@@ -21,6 +25,7 @@ type Inutil struct {
 	Logger           *Logger
 	WebSocketManager *WebSocketManager
 	Enviroment       string
+	Config           map[string]string
 }
 
 var inutil Inutil
@@ -79,6 +84,15 @@ func Start(start *StartInput) Inutil {
 	if start.WebSocket != nil {
 		logInternal("Starting WebSocketManager")
 		inutil.WebSocketManager = start.WebSocket.startWebSocket()
+	}
+
+	dat, err := os.ReadFile("config.json")
+	if !HandleError(err) {
+		var config map[string]string
+		err = json.Unmarshal(dat, &config)
+		if !HandleError(err) {
+			inutil.Config = config
+		}
 	}
 
 	return inutil
