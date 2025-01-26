@@ -35,24 +35,33 @@ func (c *Context) JSON(output Caio) {
 
 func (c *Context) Body(output any) (outerr ReturnStructError) {
 	defer PrintInternalFunction()()
+
 	return parseBody(c.Request.Body, c.Request.Header[HeaderContentType], output)
 }
 func parseBody(input io.ReadCloser, contentType []string, output any) (outerr ReturnStructError) {
 	defer PrintInternalFunction()()
 
+	Print("1")
 	if len(contentType) > 0 {
+		Print("2")
 		switch contentType[0] {
 		case ApplicationJSON:
+			Print("3")
 			dec := json.NewDecoder(input)
+			Print("4")
 			err := dec.Decode(output)
+			Print("5")
 			outerr = ReturnInternalServerError(ErrsFromError(err))
+			Print("6")
 			return
 		default:
 			outerr = ReturnInternalServerError(ErrsContentTypeNotSet)
+			Print("7")
 			return
 		}
 	} else {
 		outerr = ReturnInternalServerError(ErrsContentTypeNotSet)
+		Print("8")
 		return
 	}
 }
