@@ -73,14 +73,13 @@ func (s *Server) Options(path string, handlers ...HandlerFunc) {
 }
 
 const (
-	Error_ContentTypeNotSet = "Content-Type header not set"
-
 	ApplicationJSON = "application/json"
 	TextEventStream = "text/event-stream"
 	NoCache         = "no-cache"
 
-	HeaderContentType  = "Content-Type"
-	HeaderCacheControl = "Cache-Control"
+	HeaderContentType   = "Content-Type"
+	HeaderCacheControl  = "Cache-Control"
+	HeaderAuthorization = "Authorization"
 
 	MethodGet     = "GET"
 	MethodHead    = "HEAD"
