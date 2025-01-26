@@ -23,14 +23,14 @@ func convertContextToGin(c *Context) *gin.Context {
 
 func (c *Context) HandleError(err error) bool {
 	if err != nil {
-		PrintErrorF("HandleError: %v", err)
+		PrintErrsF("HandleError: %v", err)
 		c.Error(err)
 		return true
 	}
 	return false
 }
 
-func (c *Context) JSON(output ReturnStruct) {
+func (c *Context) JSON(output Caio) {
 	c.gc.JSON(output.GetStatusCode(), output.GetData())
 }
 
@@ -49,6 +49,5 @@ func (c *Context) Body(output any) error {
 	} else {
 		return errors.New(Error_ContentTypeNotSet)
 	}
-	logInternal("body")
 	return nil
 }

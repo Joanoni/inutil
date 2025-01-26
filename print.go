@@ -176,13 +176,12 @@ func PrintF(format string, values ...any) {
 	fmt.Printf(format+"\n", values...)
 }
 
-func PrintError(err error) {
-	PrintErrorF("%v\n", err)
+func PrintErrs(err Errs) {
+	PrintErrsF("%v\n", err)
 }
 
-func PrintErrorF(format string, err error, values ...any) {
-	values = append([]any{err.Error()}, values...)
-	color.Red(logTime()+" "+format, values...)
+func PrintErrsF(format string, values ...any) {
+	color.Red(logTime()+": "+format, values...)
 }
 
 func PrintFunction() func() {
