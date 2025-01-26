@@ -185,24 +185,24 @@ func PrintErrorF(format string, err error, values ...any) {
 	color.Red(logTime()+" "+format, values...)
 }
 
-func PrintFunction() func(string) {
+func PrintFunction() func() {
 	funcName := CallerName(2)
 	if checkFunctionPrint() {
 		PrintF("START: %v", funcName)
 	}
-	return func(funcName string) {
+	return func() {
 		if checkFunctionPrint() {
 			PrintF("END: %v", funcName)
 		}
 	}
 }
 
-func PrintInternalFunction() func(string) {
+func PrintInternalFunction() func() {
 	funcName := CallerName(2)
 	if checkFunctionPrint() {
 		PrintF("INTERNAL START: %v", funcName)
 	}
-	return func(funcName string) {
+	return func() {
 		if checkFunctionPrint() {
 			PrintF("INTERNAL END: %v", funcName)
 		}
